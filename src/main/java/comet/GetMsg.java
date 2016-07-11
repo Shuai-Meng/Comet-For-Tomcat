@@ -35,6 +35,6 @@ public class GetMsg extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext sc = getServletContext();
     	MessageSender messageSender = (MessageSender) sc.getAttribute("sender");
-    	messageSender.setMsg(request.getParameter("msg"));
+    	messageSender.addMessage(request.getParameter("msg"));
 	}
 }

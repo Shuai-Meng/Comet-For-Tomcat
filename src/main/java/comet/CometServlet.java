@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
@@ -15,11 +14,13 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
 	 
 	 public void event(CometEvent event) throws IOException, ServletException {
          if (event.getEventType() == CometEvent.EventType.BEGIN) {
-        	HttpServletResponse response = event.getHttpServletResponse();
+        	 Connection connection = new Connection();
+        	 connection.setResponse(event.getHttpServletResponse());
+        	 connection.setRequest(event.getHttpServletRequest());
+        	 
         	ServletContext sc = getServletContext();
-        	MessageSender messageSender = (MessageSender) sc.getAttribute("sender");
-        	messageSender.setConn(response);
-        	messageSender.run();
+        	ConnectionManager cm = (ConnectionManager) sc.getAttribute("connectionManager");
+        	cm.addConn(connection);
         } else if (event.getEventType() == CometEvent.EventType.ERROR) {
             event.close();
         } else if (event.getEventType() == CometEvent.EventType.END) {

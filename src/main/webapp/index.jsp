@@ -20,7 +20,7 @@
 	
 	function comet() {
 		$.post(root+"/CometServlet", function(data) {
-			alert("data: "+data);
+			console.log("data: "+data);
 			comet();
 		});
 	}
