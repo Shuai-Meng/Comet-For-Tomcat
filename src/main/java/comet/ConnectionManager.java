@@ -1,21 +1,21 @@
 package comet;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.ServletResponse;
-
-public class ConnectionManager {
+public class ConnectionManager{
 	
-	private List<Connection> connections = new ArrayList<Connection>();
+	private Map<String, Connection> connections = new ConcurrentHashMap<String, Connection>();
 	
-	public  void addConn(Connection connection) {
-		synchronized(connections) {
-			connections.add(connection);
-		}
+	public  void addConnection(Connection connection) {
+			connections.put(connection.getRequest().getRequestedSessionId(), connection);
     }
 	
-	public List<Connection> getConnections() {
-		return connections;
+	public void send(String msg) {
+    	for(Connection connection : connections.values()) {
+//    		System.out.println(connection.getRequest().getRequestedSessionId());
+    		connection.returnResponse(msg);
+    		connections.remove(connection);
+		 }
 	}
 }

@@ -8,8 +8,9 @@ public class MessageQueue {
 	
 	public synchronized void addMessage(String msg) {
 		mq.add(msg);
-		notify();
 	}
 	
-	
+	public synchronized Queue<String> getMessage() {
+		return mq;
+	}
 }

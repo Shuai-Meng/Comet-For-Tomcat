@@ -2,7 +2,6 @@ package comet;
 
 import java.io.IOException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,8 +32,7 @@ public class GetMsg extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ServletContext sc = getServletContext();
-    	MessageSender messageSender = (MessageSender) sc.getAttribute("sender");
-    	messageSender.addMessage(request.getParameter("msg"));
+    	ConnectionManager cm = (ConnectionManager) getServletContext().getAttribute("connectionManager");
+    	cm.send(request.getParameter("msg"));
 	}
 }

@@ -14,13 +14,14 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
 	 
 	 public void event(CometEvent event) throws IOException, ServletException {
          if (event.getEventType() == CometEvent.EventType.BEGIN) {
-        	 Connection connection = new Connection();
-        	 connection.setResponse(event.getHttpServletResponse());
-        	 connection.setRequest(event.getHttpServletRequest());
-        	 
         	ServletContext sc = getServletContext();
-        	ConnectionManager cm = (ConnectionManager) sc.getAttribute("connectionManager");
-        	cm.addConn(connection);
+        	ConnectionManager connectionManager = (ConnectionManager) sc.getAttribute("connectionManager");
+        	
+        	Connection connection = new Connection();
+        	connection.setRequest(event.getHttpServletRequest());
+        	connectionManager.addConnection(connection);
+        	
+        	connection.setResponse(event.getHttpServletResponse());
         } else if (event.getEventType() == CometEvent.EventType.ERROR) {
             event.close();
         } else if (event.getEventType() == CometEvent.EventType.END) {
