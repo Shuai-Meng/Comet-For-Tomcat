@@ -1,8 +1,10 @@
 package comet;
 
+import java.util.concurrent.*;
+
 import javax.servlet.*;
 
-public class Constants  implements ServletContextListener {
+public class Listener  implements ServletContextListener, Runnable {
 
 	private ConnectionManager connectionManager;
 	private ServletContext sc;
@@ -13,9 +15,15 @@ public class Constants  implements ServletContextListener {
 	}
 
 	public void contextInitialized(ServletContextEvent e) {
-		sc = e.getServletContext();
-		
 		connectionManager = new ConnectionManager();
+		sc = e.getServletContext();
 		sc.setAttribute("connectionManager", connectionManager);
+		
+		ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+		service.scheduleAtFixedRate(this, 20, 60, TimeUnit.SECONDS);
+	}
+
+	public void run() {
+		connectionManager.checkTimeOut();
 	}
 }

@@ -4,7 +4,7 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
-  <listener>
+     <listener>
         <listener-class>comet.Constants</listener-class>
      </listener>
      
@@ -22,10 +22,10 @@
   </servlet>
   <servlet-mapping>
   	<servlet-name>CometServlet</servlet-name>
-  	<url-pattern>/CometServlet</url-pattern>
+  	<url-pattern>/test/comet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>GetMsg</servlet-name>
-  	<url-pattern>/GetMsg</url-pattern>
+  	<url-pattern>/test/*</url-pattern>
   </servlet-mapping>
 </web-app>

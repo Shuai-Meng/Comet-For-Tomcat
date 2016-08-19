@@ -2,6 +2,7 @@ package comet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ public class Connection {
 	
 	private HttpServletResponse response;
 	private HttpServletRequest request;
+	private Date date;
 	
 	public synchronized void returnResponse(String msg) {
 		PrintWriter writer = null;
@@ -23,13 +25,9 @@ public class Connection {
 		}
 		notify();
 	}
-	public synchronized void setResponse(HttpServletResponse response) {
+	
+	public void setResponse(HttpServletResponse response) {
 		this.response = response;
-		try {
-			wait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public HttpServletRequest getRequest() {
@@ -38,5 +36,13 @@ public class Connection {
 	
 	public void setRequest(HttpServletRequest request) {
 		this.request = request;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }
