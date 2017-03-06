@@ -32,7 +32,7 @@ public class GetMsg extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	ConnectionManager cm = (ConnectionManager) getServletContext().getAttribute("connectionManager");
-    	cm.send(request.getParameter("msg"));
+		MessageQueue messageQueue = MessageQueue.getMessageQueue();
+		messageQueue.addMessage(request.getParameter("msg"));
 	}
 }

@@ -1,7 +1,8 @@
 package comet;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -12,32 +13,31 @@ import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
 public class CometServlet extends HttpServlet  implements CometProcessor {
-	 private static final long serialVersionUID = 1L;
-	 
-	 public void event(CometEvent event) throws IOException, ServletException {
-         if (event.getEventType() == CometEvent.EventType.BEGIN) {
-        	Connection connection = new Connection();
-        	connection.setRequest(event.getHttpServletRequest());
-        	connection.setDate(new Date());
-        	connection.setResponse(event.getHttpServletResponse());
-        	
-        	ServletContext sc = getServletContext();
-        	ConnectionManager connectionManager = (ConnectionManager) sc.getAttribute("connectionManager");
-        	connectionManager.addConnection(connection);
-        	
-        	try {
-        		synchronized (connection) {
-        			connection.wait();
-        		}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-        } else if (event.getEventType() == CometEvent.EventType.ERROR) {
-            event.close();
-        } else if (event.getEventType() == CometEvent.EventType.END) {
-            event.close();
-        } else if (event.getEventType() == CometEvent.EventType.READ) {
-            throw new UnsupportedOperationException("This servlet does not accept data");
-        }
+	private static final long serialVersionUID = 1L;
+	private Map<String, Connection> connections = null;
+	private ConnectionManager connectionManager;
+
+	public void init() {
+		connections = new ConcurrentHashMap<String, Connection>();
+		connectionManager = new ConnectionManager();
+		connectionManager.setConnections(connections);
+		new Thread(connectionManager).start();
+	}
+
+	public void event(CometEvent event) throws IOException, ServletException {
+		if (event.getEventType() == CometEvent.EventType.BEGIN) {
+			Connection connection = new Connection();
+			connection.setRequest(event.getHttpServletRequest());
+			connection.setDate(new Date());
+			connection.setResponse(event.getHttpServletResponse());
+
+			connections.put(event.getHttpServletRequest().getRequestedSessionId(), connection);
+		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
+			event.close();
+		} else if (event.getEventType() == CometEvent.EventType.END) {
+			event.close();
+		} else if (event.getEventType() == CometEvent.EventType.READ) {
+			throw new UnsupportedOperationException("This servlet does not accept data");
+		}
 	}
 }
