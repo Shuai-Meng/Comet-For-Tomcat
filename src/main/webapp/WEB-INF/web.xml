@@ -25,7 +25,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Dispatcher</servlet-name>
-        <url-pattern>/manage/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
   <servlet>

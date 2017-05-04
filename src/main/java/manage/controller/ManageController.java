@@ -23,7 +23,7 @@ public class ManageController {
     @RequestMapping(value = "/home")
     public ModelAndView getHomePage() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/home.jsp");
+        modelAndView.setViewName("index");
 
         return modelAndView;
     }

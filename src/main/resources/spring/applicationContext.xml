@@ -20,7 +20,7 @@
 	 http://www.springframework.org/schema/util
 	 http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <context:component-scan base-package="time"/>
+    <context:component-scan base-package="manage"/>
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
