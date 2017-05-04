@@ -19,14 +19,14 @@
 	});
 	
 	function comet() {
-		$.post(root+"/test/comet", function(data) {
+		$.post(root+"/test", function(data) {
 			console.log("data: "+data);
 			comet();
 		});
 	}
 	
 	function send() {
-		$.post(root+"/test/c", {'msg':$('#send').val()});
+		$.post(root+"/manage/add", {'msg':$('#send').val()});
 	}
 </script>
 </body>

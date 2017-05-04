@@ -14,14 +14,10 @@ import org.apache.catalina.comet.CometProcessor;
 
 public class CometServlet extends HttpServlet  implements CometProcessor {
 	private static final long serialVersionUID = 1L;
-	private Map<String, Connection> connections = null;
-	private ConnectionManager connectionManager;
+	private Map<String, Connection> container;
 
 	public void init() {
-		connections = new ConcurrentHashMap<String, Connection>();
-		connectionManager = new ConnectionManager();
-		connectionManager.setConnections(connections);
-		new Thread(connectionManager).start();
+		container = Container.getContainer();
 	}
 
 	public void event(CometEvent event) throws IOException, ServletException {
@@ -31,7 +27,7 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
 			connection.setDate(new Date());
 			connection.setResponse(event.getHttpServletResponse());
 
-			connections.put(event.getHttpServletRequest().getRequestedSessionId(), connection);
+			container.put(event.getHttpServletRequest().getRequestedSessionId(), connection);
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
 			event.close();
 		} else if (event.getEventType() == CometEvent.EventType.END) {

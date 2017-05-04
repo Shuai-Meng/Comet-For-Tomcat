@@ -4,28 +4,36 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
-     <listener>
-        <listener-class>comet.Constants</listener-class>
-     </listener>
-     
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:spring/applicationContext*.xml
+        </param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>Dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring/spring-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Dispatcher</servlet-name>
+        <url-pattern>/manage/*</url-pattern>
+    </servlet-mapping>
+
   <servlet>
   	<servlet-name>CometServlet</servlet-name>
-  	<display-name>CometServlet</display-name>
-  	<description></description>
   	<servlet-class>comet.CometServlet</servlet-class>
   </servlet>
-  <servlet>
-  	<servlet-name>GetMsg</servlet-name>
-  	<display-name>GetMsg</display-name>
-  	<description></description>
-  	<servlet-class>comet.GetMsg</servlet-class>
-  </servlet>
   <servlet-mapping>
   	<servlet-name>CometServlet</servlet-name>
-  	<url-pattern>/test/comet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-  	<servlet-name>GetMsg</servlet-name>
-  	<url-pattern>/test/*</url-pattern>
+  	<url-pattern>/test</url-pattern>
   </servlet-mapping>
 </web-app>
