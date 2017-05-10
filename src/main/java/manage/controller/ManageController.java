@@ -5,6 +5,7 @@ import comet.Container;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServlet;
@@ -19,7 +20,6 @@ import java.util.Map;
 @RequestMapping("/manage")
 public class ManageController {
 
-
     @RequestMapping(value = "/home")
     public ModelAndView getHomePage() {
         ModelAndView modelAndView = new ModelAndView();
@@ -29,11 +29,13 @@ public class ManageController {
     }
 
     @RequestMapping(value = "/add")
+    @ResponseBody
     public void saveMsg(HttpServletRequest httpServletRequest) {
         String msg = httpServletRequest.getParameter("msg");
 
         Map<String, Connection> container = Container.getContainer();
         for(Connection connection : container.values()) {
+            System.out.println(msg);
             connection.returnResponse(msg);
         }
     }

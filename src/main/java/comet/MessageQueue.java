@@ -2,9 +2,9 @@ package comet;
 
 import java.util.*;
 
-public class MessageQueue {
+public class MessageQueue implements Runnable {
 	private volatile static MessageQueue messageQueue;
-	private Queue<String> mq = new LinkedList<String>();
+	private List<String> mq = new LinkedList<String>();
 
 	private MessageQueue() { }
 
@@ -19,13 +19,25 @@ public class MessageQueue {
 		return messageQueue;
 	}
 
-	public synchronized void addMessage(String msg) {
+	public void addMessage(String msg) {
 		mq.add(msg);
-		System.out.println(msg);
-		notifyAll();
 	}
 
-	public  Queue<String> getMessage() {
-		return mq;
-	}
+    public void run() {
+        if(mq.size() == 0) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+
+            }
+        } else {
+            for(String msg: mq) {
+                Map<String, Connection> container = Container.getContainer();
+                for(Connection connection : container.values()) {
+                    System.out.println(msg);
+                    connection.returnResponse(msg);
+                }
+            }
+        }
+    }
 }

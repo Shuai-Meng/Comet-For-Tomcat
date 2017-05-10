@@ -23,7 +23,6 @@ public class Connection {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		notify();
 	}
 
 	public void setResponse(HttpServletResponse response) {

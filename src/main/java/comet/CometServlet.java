@@ -21,7 +21,7 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
 	}
 
 	public void event(CometEvent event) throws IOException, ServletException {
-		event.setTimeout(60000);
+		event.setTimeout(600000);
 		if (event.getEventType() == CometEvent.EventType.BEGIN) {
 			Connection connection = new Connection();
 			connection.setRequest(event.getHttpServletRequest());
