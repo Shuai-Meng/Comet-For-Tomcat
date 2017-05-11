@@ -1,17 +1,16 @@
 package manage.controller;
 
-import comet.Connection;
-import comet.Container;
-import org.springframework.http.HttpRequest;
+import comet.ImmediateQueue;
+import comet.Message;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
  * Created by m on 17-5-4.
@@ -32,11 +31,11 @@ public class ManageController {
     @ResponseBody
     public void saveMsg(HttpServletRequest httpServletRequest) {
         String msg = httpServletRequest.getParameter("msg");
-
-        Map<String, Connection> container = Container.getContainer();
-        for(Connection connection : container.values()) {
-            System.out.println(msg);
-            connection.returnResponse(msg);
-        }
+        Message message = new Message();
+        message.setContent(msg);
+        WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
+        ServletContext servletContext = webApplicationContext.getServletContext();
+        ImmediateQueue immediateQueue = (ImmediateQueue)servletContext.getAttribute("immediateQueue");
+        immediateQueue.addMessage(message);
     }
 }

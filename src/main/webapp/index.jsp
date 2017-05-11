@@ -19,7 +19,7 @@
 	});
 	
 	function comet() {
-		$.post(root+"/test", function(data) {
+		$.get(root+"/test", function(data) {
 			console.log("data: "+data);
 			comet();
 		});

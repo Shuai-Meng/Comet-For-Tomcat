@@ -10,8 +10,12 @@
             classpath:spring/applicationContext*.xml
         </param-value>
     </context-param>
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>comet.Listener</listener-class>
     </listener>
 
     <servlet>

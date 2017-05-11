@@ -10,7 +10,6 @@ public class ConnectionManager implements Runnable{
 
 	public ConnectionManager() {
 		MessageQueue messageQueue = MessageQueue.getMessageQueue();
-		mq = messageQueue.getMessage();
 	}
 	public void setConnections(Map<String, Connection> connections) {
 		this.connections = connections;
