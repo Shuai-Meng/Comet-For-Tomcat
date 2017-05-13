@@ -1,7 +1,7 @@
 package manage.controller;
 
-import comet.ImmediateQueue;
 import comet.Message;
+import comet.MessageQueue;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,7 +35,7 @@ public class ManageController {
         message.setContent(msg);
         WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
         ServletContext servletContext = webApplicationContext.getServletContext();
-        ImmediateQueue immediateQueue = (ImmediateQueue)servletContext.getAttribute("immediateQueue");
-        immediateQueue.addMessage(message);
+        MessageQueue messageQueue = (MessageQueue)servletContext.getAttribute("messageQueue");
+        messageQueue.addMessage(message);
     }
 }

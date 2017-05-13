@@ -13,8 +13,10 @@ public class Listener  implements ServletContextListener{
 
 	public void contextInitialized(ServletContextEvent e) {
 		sc = e.getServletContext();
-		ImmediateQueue  immediateQueue = new ImmediateQueue();
-		sc.setAttribute("immediateQueue", immediateQueue);
-		new Thread(immediateQueue).start();
+		MessageQueue  messageQueue = new MessageQueue();
+		sc.setAttribute("messageQueue", messageQueue);
+
+		new Thread(messageQueue).start();
+        new Thread(new MessageManager()).start();
 	}
 }

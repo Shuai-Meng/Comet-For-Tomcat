@@ -3,40 +3,43 @@ package comet;
 import java.util.*;
 
 public class MessageQueue implements Runnable {
-	private volatile static MessageQueue messageQueue;
-	private List<String> mq = new LinkedList<String>();
+    private List<Message> messageQuque;
+    Map<String, Connection> container = Container.getContainer();
 
-	private MessageQueue() { }
+    public MessageQueue() {
+        this.messageQuque = new ArrayList<Message>();
+    }
 
-	public static MessageQueue getMessageQueue() {
-		if(messageQueue == null) {
-			synchronized (MessageQueue.class) {
-				if(messageQueue == null)
-					messageQueue = new MessageQueue();
-			}
-		}
+    public synchronized void addMessage(Message message) {
+        if(messageQuque.size() >= 100)
+            sendMessage();
 
-		return messageQueue;
-	}
+        messageQuque.add(message);
+        notifyAll();
+    }
 
-	public void addMessage(String msg) {
-		mq.add(msg);
-	}
+
+    private void sendMessage() {
+        for(Message message : messageQuque) {
+            System.out.println("sending...");
+            for(Connection connection: container.values()) {
+                connection.returnResponse(message.getContent());
+            }
+        }
+        messageQuque.clear();
+    }
 
     public void run() {
-        if(mq.size() == 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-
-            }
-        } else {
-            for(String msg: mq) {
-                Map<String, Connection> container = Container.getContainer();
-                for(Connection connection : container.values()) {
-                    System.out.println(msg);
-                    connection.returnResponse(msg);
-                }
+        while(true) {
+            synchronized (this) {
+                if(messageQuque.size() == 0) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    sendMessage();
             }
         }
     }
