@@ -24,7 +24,7 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
             event.setTimeout(15000);
 			connection.setEvent(event);
 
-			container.put(event.getHttpServletRequest().getRequestedSessionId(), connection);
+			container.put(event.getHttpServletRequest().getRemoteUser(), connection);
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
 			event.close();
             container.remove(event);

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <http auto-config="true">
+        <intercept-url pattern="/login.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <intercept-url pattern="/home.jsp" access="ROLE_ADMIN" />
+        <intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_SUBSCRIBER,ROLE_PUBLISHER" />
+        <!--<form-login login-page='/login.jsp' authentication-failure-url='/login.jsp?error=true'-->
+                    <!--default-target-url="/index.jsp"/>-->
+        <!--<logout/>-->
+    </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="dataSource"
+                               users-by-username-query="select name, password, true
+                from user where name=?"
+                               authorities-by-username-query="select u.name, u.role as authority
+                from user u where u.name=?" />
+        </authentication-provider>
+    </authentication-manager>
+
+    <beans:bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="location" value="classpath:properties/db.properties" />
+    </beans:bean>
+
+    <beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <beans:property name="driverClassName" value="${jdbc.driver}"/>
+        <beans:property name="url" value="${jdbc.url}?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <beans:property name="username" value="${jdbc.username}"/>
+        <beans:property name="password" value="${jdbc.password}"/>
+    </beans:bean>
+</beans:beans>
