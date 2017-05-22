@@ -16,6 +16,16 @@
     </update>
 
     <select id="getCount" parameterType="string" resultType="int">
-        select count(1) from message_type where name = #{name}
+        select count(1) from message_type where 1 =1
+        <if test="name != null">
+            and name = #{name}
+        </if>
+    </select>
+
+    <select id="getRows" parameterType="string" resultType="manage.vo.MessageType">
+        select * from message_type where 1 =1
+        <if test="name != null">
+            and name = #{name}
+        </if>
     </select>
 </mapper>

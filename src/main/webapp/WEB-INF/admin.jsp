@@ -51,56 +51,44 @@
     <script>
     (function(obj) {
         $(function () {
-            $("#auth").click(generateTabForAuth);
-            $("#type").click(generateTab("type", "type"));
+            $("#auth").click(function() {
+                var column = new Array({field:'id',title:'编号',width:100,align:'left'},
+                        {field:'name',title:'名称',width:200},
+                        {field:'role',title:'角色',width:120},
+                        {field:'operation',title:'操作',width:160, align:'center',
+                            formatter:function(value,row){
+                                var s = "";
+                                var pre = '<input type="button" class = "handle"';
+                                if(row.role == 'ROLE_PUB')
+                                    s = pre + 'name="degrade" value="降级"/>';
+                                if(row.role == 'ROLE_SUB' && row.flag == '1') {
+                                    s = pre + 'name="agree" value="同意"/>';
+                                    s += ' ' + pre + 'name="refuse" value="拒绝"/>';
+                                }
+                                return s;
+                            }
+                        });
+                generateTab("auth", "auth", obj.contextPath + "/getUsers", column)
+            });
+
+            $("#type").click(function() {
+                var column = new Array({field:'id',title:'编号',width:100,align:'left'},
+                        {field:'name',title:'名称',width:200},
+                        {field:'operation',title:'操作',width:160, align:'center',
+                            formatter:function(value,row){
+                                var s = '<input type="button" class = "handle" name="delete" value="delete"/>';
+                                var p = '<input type="button" class = "handle" name="modify" value="modify"/>';
+                                return s + " " + p;
+                            }
+                        });
+                generateTab("type", "type", obj.contextPath + "/getMessageType", column);
+            });
+
+
         });
 
-        function generateTabForAuth() {
-            if (obj.$tabs.tabs('exists', "auth")) {
-                obj.$tabs.tabs('select', "auth");
-                return;
-            }
+        function addClickForButton() {
 
-            var $div = $("#dirTab").clone(true);
-            $div.attr("id", "auth");
-
-            obj.$tabs.tabs('add', {
-                title: '权限管理',
-                content: $div[0],
-                closable: true
-            });
-
-            var json = {};
-            var $table = $div.find('table');
-            $div.find('input').searchbox({
-                width:300,
-                prompt:'请输入标题关键字',
-                menu: $div.find('.searchMenu'),
-                searcher: function(key, value) {
-                    json['key'] = key;
-                    json['type'] = value;
-                    $table.datagrid('load', json);
-                },
-            });
-
-
-            var column = new Array({field:'id',title:'编号',width:100,align:'left'},
-                    {field:'name',title:'名称',width:200},
-                    {field:'role',title:'角色',width:120},
-                    {field:'operation',title:'操作',width:160, align:'center',
-                        formatter:function(value,row){
-                            var s = "";
-                            var pre = '<input type="button" class = "handle"';
-                            if(row.role == 'ROLE_PUB')
-                                s = pre + 'name="degrade" value="降级"/>';
-                            if(row.role == 'ROLE_SUB' && row.flag == '1') {
-                                s = pre + 'name="agree" value="同意"/>';
-                                s += ' ' + pre + 'name="refuse" value="拒绝"/>';
-                            }
-                            return s;
-                        }
-                    });
-            generateTable($table, json, column, handleAuth);
         }
 
         function generateTable($table, url, json, column, handle) {
@@ -155,7 +143,7 @@
             });
         }
 
-        function generateTab(name, id) {
+        function generateTab(name, id, url, column) {
             if (obj.$tabs.tabs('exists', id)) {
                 obj.$tabs.tabs('select', id);
                 return;
@@ -186,17 +174,7 @@
             if(id != 'auth')
                 $div.remove(".searchMenu");
 
-            var column = new Array({field:'id',title:'编号',width:100,align:'left'},
-                    {field:'name',title:'名称',width:200},
-                    {field:'operation',title:'操作',width:160, align:'center',
-                        formatter:function(value,row){
-                            var s = '<input type="button" class = "handle" name="delete" value="delete"/>';
-                            var p = '<input type="button" class = "handle" name="modify" value="modify"/>';
-                            return s + " " + p;
-                        }
-                    });
-
-            generateTable($table, obj.contextPath + "/getMessageType",json, column, handleType);
+            generateTable($table, url, json, column, handleType);
         }
 
         function handleType(row, flag) {
