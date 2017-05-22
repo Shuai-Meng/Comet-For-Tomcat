@@ -9,6 +9,15 @@ public class User {
     private String role;
     private String list;
     private String password;
+    private String flag;
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
 
     public int getId() {
         return id;

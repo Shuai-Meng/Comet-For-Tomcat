@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manage.dao.UserMapper">
+
+    <insert id="insert" parameterType="manage.vo.User">
+        insert into user(name, password, role)
+               values(#{name}, #{password}, #{role})
+    </insert>
+
+    <select id="selectUserByRoleOrName" resultType="manage.vo.User" parameterType="manage.vo.User">
+        select * from user where 1 = 1
+        <if test = "role != null">
+         AND role = #{role}
+        </if>
+        <if test = "name != null">
+            AND name = #{name}
+        </if>
+        <if test = "flag != null">
+            AND flag = #{flag}
+        </if>
+    </select>
+
+    <select id="getCount" parameterType="manage.vo.User" resultType="int">
+        select count(1) from user where 1 = 1
+        <if test = "role != null">
+            AND role = #{role}
+        </if>
+        <if test = "name != null">
+            AND name like concat(concat('%',#{name}),'%')
+        </if>
+        <if test = "flag != null">
+            AND flag = #{flag}
+        </if>
+    </select>
+
+    <update id="update" parameterType="manage.vo.User">
+        update user set role = #{role}
+        <if test="flag != null">
+            , flag = #{flag}
+        </if>
+        where id = #{id}
+    </update>
+</mapper>

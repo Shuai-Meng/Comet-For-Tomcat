@@ -10,7 +10,7 @@
     <http auto-config="true">
         <intercept-url pattern="/login.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <intercept-url pattern="/home.jsp" access="ROLE_ADMIN" />
-        <intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_SUBSCRIBER,ROLE_PUBLISHER" />
+        <intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_SUB,ROLE_PUB" />
         <!--<form-login login-page='/login.jsp' authentication-failure-url='/login.jsp?error=true'-->
                     <!--default-target-url="/index.jsp"/>-->
         <!--<logout/>-->
