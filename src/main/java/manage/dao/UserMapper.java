@@ -1,6 +1,6 @@
 package manage.dao;
 
-import manage.vo.User;
+import manage.vo.MyUser;
 
 import java.util.*;
 
@@ -8,8 +8,14 @@ import java.util.*;
  * Created by m on 17-5-13.
  */
 public interface UserMapper {
-    void update(User user);
-    List<User> selectUserByRoleOrName(User user);
-    int getCount(User user);
-    List<User> selectUserByType(Map<String, Object> map);
+    void update(MyUser myUser);
+    List<MyUser> selectUserByRoleOrName(MyUser myUser);
+    int getCount(MyUser myUser);
+    List<MyUser> selectUserByType(Map<String, Object> map);
+
+    void subsribe(Map<String, Integer> map);
+
+    void deSubsribe(Map<String, Integer> map);
+
+    List<MyUser> selectUserByName(String name);
 }

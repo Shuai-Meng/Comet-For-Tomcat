@@ -3,7 +3,7 @@ package manage.controller;
 import manage.service.ManageService;
 import manage.vo.Message;
 import manage.vo.MessageType;
-import manage.vo.User;
+import manage.vo.MyUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,7 +40,7 @@ public class ManageController {
 
     @RequestMapping(value = "/getUser")
     @ResponseBody
-    public List<User> getUser(HttpServletRequest httpServletRequest) {
+    public List<MyUser> getUser(HttpServletRequest httpServletRequest) {
         String key = httpServletRequest.getParameter("q");
         String type = httpServletRequest.getParameter("type");
         return manageService.getUsers(key, Integer.valueOf(type));
@@ -48,8 +48,8 @@ public class ManageController {
 
     @RequestMapping(value = "/modifyAuth")
     @ResponseBody
-    public void modifyAuth(User user) {
-        manageService.modifyAuth(user);
+    public void modifyAuth(MyUser myUser) {
+        manageService.modifyAuth(myUser);
     }
 
     @RequestMapping(value = "/getMessageType")
@@ -64,6 +64,13 @@ public class ManageController {
     public Map<String,Object> getSubscribeType(HttpServletRequest httpServletRequest) {
         String key = httpServletRequest.getParameter("key");
         return manageService.getSubscribeType(key);
+    }
+
+    @RequestMapping(value = "/subscribe")
+    public void subscribe(HttpServletRequest httpServletRequest) {
+        String typeId = httpServletRequest.getParameter("typeId");
+        String operation = httpServletRequest.getParameter("operation");
+        manageService.subscribe(typeId, operation);
     }
 
     @RequestMapping(value = "/getMessageTypes")

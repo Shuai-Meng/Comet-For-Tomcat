@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="manage.dao.UserMapper">
-    <select id="selectUserByType" parameterType="java.util.Map" resultType="manage.vo.User">
+    <select id="selectUserByType" parameterType="java.util.Map" resultType="manage.vo.MyUser">
         select user.id, user.name, user.role from user
           inner join subscribe_list on user.id = subscribe_list.user_id
         where 1 =1
@@ -13,43 +13,54 @@
         and subscribe_list.type_id = #{typeId}
     </select>
 
-    <select id="selectUserByRoleOrName" resultType="manage.vo.User" parameterType="manage.vo.User">
+    <select id="selectUserByRoleOrName" resultType="manage.vo.MyUser" parameterType="manage.vo.MyUser">
         select * from user where 1 = 1
         <if test = "role != null">
          AND role = #{role}
         </if>
         <if test = "name != null">
-            AND name = #{name}
+            AND name = like concat(concat('%',#{name}),'%')
         </if>
-        <if test = "flag != null">
-            AND flag = #{flag}
+        <if test = "whetherApplying != null">
+            AND whetherApplying = #{whetherApplying}
         </if>
     </select>
 
-    <select id="getCount" parameterType="manage.vo.User" resultType="int">
+    <select id="selectUserByName" parameterType="string" resultType="manage.vo.MyUser">
+        select * from user where name = #{name}
+    </select>
+
+    <select id="getCount" parameterType="manage.vo.MyUser" resultType="int">
         select count(1) from user where 1 = 1
         <if test = "role != null">
             AND role = #{role}
         </if>
-        <if test = "name != null">
+        <if test = "name != null and name !='' ">
             AND name like concat(concat('%',#{name}),'%')
         </if>
-        <if test = "flag != null">
-            AND flag = #{flag}
+        <if test = "whetherApplying != null">
+            AND whetherApplying = #{whetherApplying}
         </if>
     </select>
 
-    <update id="update" parameterType="manage.vo.User">
+    <update id="update" parameterType="manage.vo.MyUser">
         update user set role = #{role}
-        <if test="flag != null">
-            , flag = #{flag}
+        <if test="whetherApplying != null">
+            , whetherApplying = #{whetherApplying}
         </if>
         where id = #{id}
     </update>
 
-
-    <insert id="insert" parameterType="manage.vo.User">
+    <insert id="insert" parameterType="manage.vo.MyUser">
         insert into user(name, password, role)
         values(#{name}, #{password}, #{role})
+    </insert>
+
+    <delete id="deSubsribe" parameterType="java.util.Map">
+        delete from subscribe_list where type_id = #{typeId} and user_id = #{userId}
+    </delete>
+
+    <insert id="subsribe" parameterType="java.util.Map">
+        insert into subscribe_list(user_id, type_id) values (#{userId}, #{typeId})
     </insert>
 </mapper>

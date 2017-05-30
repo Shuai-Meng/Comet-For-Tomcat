@@ -2,7 +2,7 @@ package manage.dao;
 
 import manage.vo.Message;
 import manage.vo.MessageType;
-import manage.vo.User;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,10 +11,10 @@ import java.util.List;
  */
 public interface MessageMapper {
     List<MessageType> getTypeRows(String name);
-    int getTypeCount(String name);
+    int getTypeCount(@Param("name")String name);
 
     List<MessageType> getSubscribeType(MessageType messageType);
-    int getSubscribeTypeCount(String name);
+    Integer getSubscribeTypeCount(@Param("name") String name);
 
     void deleteType(int id);
     void updateType(MessageType messageType);

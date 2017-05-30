@@ -5,13 +5,13 @@ import manage.dao.*;
 import manage.service.ManageService;
 import manage.vo.Message;
 import manage.vo.MessageType;
-import manage.vo.User;
+import manage.vo.MyUser;
+import manage.vo.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
+import utils.SpringSecurityUtil;
 
 import javax.servlet.ServletContext;
 import java.util.*;
@@ -27,29 +27,32 @@ public class ManageServiceImpl implements ManageService{
     MessageMapper messageMapper;
 
     public Map<String,Object> getUsers(String key, String role) {
-        User user = new User();
+        MyUser myUser = new MyUser();
+        myUser.setRole(role);
+        myUser.setName(key);
+
         if("all".equals(role))
-            user.setRole(null);
+            myUser.setRole(null);
         else if("ROLE_SUB".equals(role))
-            user.setFlag("1");
+            myUser.setWhetherApplying("1");
         else if("".equals(key))
-            user.setName(null);
+            myUser.setName(null);
 
         Map<String,Object> res = new HashMap<String,Object>();
-        res.put("total", userMapper.getCount(user));
-        res.put("rows", userMapper.selectUserByRoleOrName(user));
+        res.put("total", userMapper.getCount(myUser));
+        res.put("rows", userMapper.selectUserByRoleOrName(myUser));
         return res;
     }
 
-    public List<User> getUsers(String key, int typeId) {
+    public List<MyUser> getUsers(String key, int typeId) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", key);
         map.put("typeId", typeId);
         return userMapper.selectUserByType(map);
     }
 
-    public void modifyAuth(User user) {
-        userMapper.update(user);
+    public void modifyAuth(MyUser myUser) {
+        userMapper.update(myUser);
     }
 
     public void modifyType(String id, String name, String operation) {
@@ -71,13 +74,13 @@ public class ManageServiceImpl implements ManageService{
         return res;
     }
 
-
     public List<MessageType> getMessageTypes() {
         return messageMapper.getTypeRows(null);
     }
 
     public void addMessage(Message message) {
-        message.setCreator(null);
+        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
+        message.setCreator(securityUser.getUsername());
         message.setCreatTime(new Date());
 
         if("1".equals(message.getMethod())) {
@@ -95,11 +98,25 @@ public class ManageServiceImpl implements ManageService{
     public Map<String, Object> getSubscribeType(String key) {
         MessageType messageType = new MessageType();
         messageType.setName(key);
+        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
+        messageType.setId(securityUser.getUserId());
 
         Map<String,Object> res = new HashMap<String,Object>();
-        res.put("total", messageMapper.getSubscribeType(messageType));
-        res.put("rows", messageMapper.getSubscribeTypeCount(key));
+        res.put("rows", messageMapper.getSubscribeType(messageType));
+        res.put("total", messageMapper.getSubscribeTypeCount(key));
         return res;
+    }
+
+    public void subscribe(String typeId, String operation) {
+        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        map.put("typeId", Integer.valueOf(typeId));
+        map.put("userId", securityUser.getUserId());
+
+        if(operation.equals("sub"))
+            userMapper.subsribe(map);
+        else
+            userMapper.deSubsribe(map);
     }
 
     public Map<String, Object> getMessage(String key) {

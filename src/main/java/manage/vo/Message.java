@@ -13,7 +13,6 @@ public class Message {
     private String creator;
     private Date creatTime;
     private Date sendTime;
-    private Integer[] target;
     private String method;
 
     public String getMethod() {
@@ -22,14 +21,6 @@ public class Message {
 
     public void setMethod(String method) {
         this.method = method;
-    }
-
-    public Integer[] getTarget() {
-        return target;
-    }
-
-    public void setTarget(Integer[] target) {
-        this.target = target;
     }
 
     public String getContent() {

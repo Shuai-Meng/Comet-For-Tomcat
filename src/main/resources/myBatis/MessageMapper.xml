@@ -35,7 +35,7 @@
             select user_id from subscribe_list
               where message_type.id  = subscribe_list.type_id
                 and subscribe_list.user_id = #{id}
-          ), 0, 1) as opr
+          ), 0, 1) as operation
         from message_type
         where 1 =1
         <if test="name != null">
@@ -43,10 +43,10 @@
         </if>
     </select>
 
-    <select id="getSubscribeTypeCount" parameterType="string" resultType="manage.vo.MessageType">
+    <select id="getSubscribeTypeCount" resultType="int">
         select count(1) from message_type
-        where 1 =1
-        <if test="name != null">
+        where 1 = 1
+        <if test="name != null and name != '' ">
             and message_type.name like concat(concat('%',#{name}),'%');
         </if>
     </select>
@@ -54,7 +54,7 @@
 
     <!-- msg -->
     <select id="getCount" parameterType="string" resultType="int">
-        select count(1) from message where 1 =1
+        select count(1) from message where 1 = 1
         <if test="name != null">
             and like concat(concat('%',#{name}),'%')
         </if>
@@ -68,8 +68,8 @@
     </select>
 
     <insert id="insertMessage" parameterType="manage.vo.Message">
-        insert into message(title, content, type, createTime, creator, sendTime, target) values
-          (#{title}, #{content}, ${type}, #{createTime}, #{creator}, #{sendTime}, #{target})
+        insert into message(title, content, type, createTime, creator, sendTime) values
+          (#{title}, #{content}, ${type}, #{createTime}, #{creator}, #{sendTime})
     </insert>
 
     <delete id="deleteMessage" parameterType="int">

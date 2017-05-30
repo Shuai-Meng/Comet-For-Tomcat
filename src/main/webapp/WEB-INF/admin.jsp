@@ -9,7 +9,7 @@
 <%@ page isELIgnored="false" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>管理页面</title>
     <script src="<%= request.getContextPath()%>/js/jquery.min.js"></script>
     <script src="<%= request.getContextPath()%>/js/jquery.easyui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/default/easyui.css">
@@ -55,8 +55,8 @@
             <strong style="font-size:110%;color:green;padding:2px">消息类别</strong>
             <input name="type">&nbsp;&nbsp;
 
-            <strong style="font-size:110%;color:green;padding:2px">目标用户</strong>
-            <input type="text" name="target"><br>
+            <%--<strong style="font-size:110%;color:green;padding:2px">目标用户</strong>--%>
+            <%--<input type="text" name="target"><br>--%>
 
             <strong style="font-size:110%;color:green;padding:2px">推送方式</strong>
             <input name="method"/>&nbsp;&nbsp;
@@ -83,7 +83,7 @@
                                 var pre = '<input type="button" class = "handle"';
                                 if(row.role == 'ROLE_PUB')
                                     s = pre + 'name="degrade" value="降级"/>';
-                                if(row.role == 'ROLE_SUB' && row.flag == '1') {
+                                if(row.role == 'ROLE_SUB' && row.whetherApplying == '1') {
                                     s = pre + 'name="agree" value="同意"/>';
                                     s += ' ' + pre + 'name="refuse" value="拒绝"/>';
                                 }
@@ -134,7 +134,7 @@
                                     return '<input type="button" class = "handle" name="desub" value="取消订阅"/>';
                             }
                         });
-                generateTab("消息类别管理", "type", column);
+                generateTab("订阅管理", "subscribe", column);
             });
         });
 
@@ -163,7 +163,7 @@
                 $menu = '#roleMenu';
             } else if(id == "type")
                 url = obj.contextPath + "/getMessageType";
-            else
+            else if(id == "subscribe")
                 url = obj.contextPath + "/getSubscribeType";
 
             $div.find('input').searchbox({
@@ -181,7 +181,7 @@
             generateTable($table, url, json, column, id);
         }
 
-        function generateTable($table, url, json, column, flag) {
+        function generateTable($table, url, json, column, whetherApplying) {
             $table.datagrid({
                 width: 'auto',
                 height: 'auto',
@@ -198,9 +198,9 @@
                     text:'add',
                     iconCls:'icon-add',
                     handler: function() {
-                        if(flag == "type")
+                        if(whetherApplying == "type")
                             editType();
-                        else if(flag == "message")
+                        else if(whetherApplying == "message")
                             editMessage(0, "new");
                     }
                 }],
@@ -210,11 +210,11 @@
                         if(row == null)
                             return;//interesting, auto selected
 
-                        if(flag == "auth")
+                        if(whetherApplying == "auth")
                             handleAuth(row, this.name);//name? field?
-                        else if(flag == "type")
+                        else if(whetherApplying == "type")
                             handleType(row, this.name);
-                        else if(flag == "message")
+                        else if(whetherApplying == "message")
                             handleMessage(row, this.name);
                         else
                             handleSubscribe(row, this.name);
@@ -223,24 +223,24 @@
                     });
                 },
                 onDblClickRow: function(rowIndex, rowData) {
-                    if(flag == "message") {
+                    if(whetherApplying == "message") {
 
                     }
                 }
             });
         }
 
-        function handleAuth(row, flag) {
+        function handleAuth(row, whetherApplying) {
             var json = {};
             json["id"] = row.id;
 
-            if(flag == "degrage")
+            if(whetherApplying == "degrage")
                 json["role"] = "ROLE_SUB";
-            else if(flag == "agree")
+            else if(whetherApplying == "agree")
                 json["role"] = "ROLE_PUB";
             else {
                 json["role"] = "ROLE_SUB";
-                json["flag"] = "0";
+                json["whetherApplying"] = "0";
             }
 
             $.ajax({
@@ -256,12 +256,12 @@
             });
         }
 
-        function handleType(row, flag) {
+        function handleType(row, whetherApplying) {
             //TODO
             $.ajax({
                 url: obj.contextPath + "/modifyType",
                 type: 'post',
-                data: {"id": row.id, "name": row.name, "operation": flag},
+                data: {"id": row.id, "name": row.name, "operation": whetherApplying},
                 success: function (data) {
                     $.messager.alert('info', obj.message.actionSuccess);
                 },
@@ -271,11 +271,11 @@
             });
         }
 
-        function handleMessage(row, flag) {
+        function handleMessage(row, whetherApplying) {
             $.ajax({
                 url: obj.contextPath + "/modifyMessage",
                 type: 'post',
-                data: {"id": row.id, "name": row.name, "operation": flag},
+                data: {"id": row.id, "name": row.name, "operation": whetherApplying},
                 success: function (data) {
                     $.messager.alert('info', obj.message.actionSuccess);
                 },
@@ -285,8 +285,18 @@
             });
         }
 
-        function handleSubscribe(row, flag) {
+        function handleSubscribe(row, whetherApplying) {
+            $.ajax({
+                url: obj.contextPath + "subscribe",
+                type: 'post',
+                data: {"typeId": row.id, "operation": whetherApplying},
+                success: function(data) {
 
+                },
+                error: function(data) {
+
+                }
+            })
         }
 
         function editMessage(id, operation) {
@@ -302,13 +312,6 @@
                 title: id,
                 content: $div[0],
                 closable: true
-            });
-
-            $div.find('input[name="target"]').combobox({
-                url: obj.contextPath + "/getUser?type=1",
-                valueField: 'id',
-                textField: 'name',
-                multiple: true,
             });
 
             $div.find('input[name="type"]').combobox({

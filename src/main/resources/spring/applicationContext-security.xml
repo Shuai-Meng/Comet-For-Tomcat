@@ -16,25 +16,8 @@
         <!--<logout/>-->
     </http>
 
+    <beans:bean id="userDetailsService" class="manage.service.impl.MyUserServiceImpl"/>
     <authentication-manager>
-        <authentication-provider>
-            <jdbc-user-service data-source-ref="dataSource"
-                               users-by-username-query="select name, password, true
-                from user where name=?"
-                               authorities-by-username-query="select u.name, u.role as authority
-                from user u where u.name=?" />
-        </authentication-provider>
+        <authentication-provider user-service-ref="userDetailsService"/>
     </authentication-manager>
-
-    <beans:bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <beans:property name="location" value="classpath:properties/db.properties" />
-    </beans:bean>
-
-    <beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <beans:property name="driverClassName" value="${jdbc.driver}"/>
-        <beans:property name="url" value="${jdbc.url}?useUnicode=true&amp;characterEncoding=utf-8"/>
-        <beans:property name="username" value="${jdbc.username}"/>
-        <beans:property name="password" value="${jdbc.password}"/>
-    </beans:bean>
 </beans:beans>

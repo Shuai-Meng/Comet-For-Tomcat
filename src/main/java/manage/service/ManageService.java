@@ -9,7 +9,7 @@ import java.util.*;
  * Created by m on 17-5-12.
  */
 public interface ManageService {
-    void modifyAuth(User user);
+    void modifyAuth(MyUser myUser);
 
     Map<String,Object> getUsers(String key, String role);
 
@@ -19,11 +19,13 @@ public interface ManageService {
 
     Map<String,Object> getMessage(String key);
 
-    List<User> getUsers(String key, int typeId);
+    List<MyUser> getUsers(String key, int typeId);
 
     List<MessageType> getMessageTypes();
 
     void addMessage(Message message);
 
     Map<String,Object> getSubscribeType(String key);
+
+    void subscribe(String typeId, String operation);
 }
