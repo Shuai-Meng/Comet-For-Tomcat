@@ -3,11 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="manage.dao.UserMapper">
-
-    <insert id="insert" parameterType="manage.vo.User">
-        insert into user(name, password, role)
-               values(#{name}, #{password}, #{role})
-    </insert>
+    <select id="selectUserByType" parameterType="java.util.Map" resultType="manage.vo.User">
+        select user.id, user.name, user.role from user
+          inner join subscribe_list on user.id = subscribe_list.user_id
+        where 1 =1
+        <if test="name != null">
+            and user.name like concat(concat('%',#{name}),'%')
+        </if>
+        and subscribe_list.type_id = #{typeId}
+    </select>
 
     <select id="selectUserByRoleOrName" resultType="manage.vo.User" parameterType="manage.vo.User">
         select * from user where 1 = 1
@@ -42,4 +46,10 @@
         </if>
         where id = #{id}
     </update>
+
+
+    <insert id="insert" parameterType="manage.vo.User">
+        insert into user(name, password, role)
+        values(#{name}, #{password}, #{role})
+    </insert>
 </mapper>

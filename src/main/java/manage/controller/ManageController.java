@@ -1,18 +1,15 @@
 package manage.controller;
 
-import comet.Message;
-import comet.MessageQueue;
 import manage.service.ManageService;
+import manage.vo.Message;
+import manage.vo.MessageType;
 import manage.vo.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -33,24 +30,20 @@ public class ManageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/add")
-    @ResponseBody
-    public void saveMsg(HttpServletRequest httpServletRequest) {
-        String msg = httpServletRequest.getParameter("msg");
-        Message message = new Message();
-        message.setContent(msg);
-        WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
-        ServletContext servletContext = webApplicationContext.getServletContext();
-        MessageQueue messageQueue = (MessageQueue)servletContext.getAttribute("messageQueue");
-        messageQueue.addMessage(message);
-    }
-
     @RequestMapping(value = "/getUsers")
     @ResponseBody
     public Map<String,Object> getUsers(HttpServletRequest httpServletRequest) {
         String key = httpServletRequest.getParameter("key");
+        String role = httpServletRequest.getParameter("role");
+        return manageService.getUsers(key, role);
+    }
+
+    @RequestMapping(value = "/getUser")
+    @ResponseBody
+    public List<User> getUser(HttpServletRequest httpServletRequest) {
+        String key = httpServletRequest.getParameter("q");
         String type = httpServletRequest.getParameter("type");
-        return manageService.getUsers(key, type);
+        return manageService.getUsers(key, Integer.valueOf(type));
     }
 
     @RequestMapping(value = "/modifyAuth")
@@ -66,6 +59,19 @@ public class ManageController {
         return manageService.getMessageType(key);
     }
 
+    @RequestMapping(value = "/getSubscribeType")
+    @ResponseBody
+    public Map<String,Object> getSubscribeType(HttpServletRequest httpServletRequest) {
+        String key = httpServletRequest.getParameter("key");
+        return manageService.getSubscribeType(key);
+    }
+
+    @RequestMapping(value = "/getMessageTypes")
+    @ResponseBody
+    public List<MessageType> getMessageTypes(HttpServletRequest httpServletRequest) {
+        return manageService.getMessageTypes();
+    }
+
     @RequestMapping(value = "/modifyType")
     @ResponseBody
     public void modifyType(HttpServletRequest httpServletRequest) {
@@ -73,5 +79,17 @@ public class ManageController {
         String name = httpServletRequest.getParameter("name");
         String operation = httpServletRequest.getParameter("operation");
         manageService.modifyType(id, name, operation);
+    }
+
+    @RequestMapping(value = "/getMessage")
+    @ResponseBody
+    public Map<String,Object> getMessage(HttpServletRequest httpServletRequest) {
+        String key = httpServletRequest.getParameter("key");
+        return manageService.getMessage(key);
+    }
+
+    @RequestMapping(value = "/addMessage")
+    public void addMessage(Message message) {
+        manageService.addMessage(message);
     }
 }

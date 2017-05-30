@@ -3,6 +3,20 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="manage.dao.MessageMapper">
+    <select id="getTypeCount" parameterType="string" resultType="int">
+        select count(1) from message_type where 1 =1
+        <if test="name != null">
+            and name like concat(concat('%',#{name}),'%')
+        </if>
+    </select>
+
+    <select id="getTypeRows" parameterType="string" resultType="manage.vo.MessageType">
+        select * from message_type where 1 =1
+        <if test="name != null">
+            and name like concat(concat('%',#{name}),'%')
+        </if>
+    </select>
+
     <insert id="insertType" parameterType="string">
         insert into message_type(name) values(#{name})
     </insert>
@@ -15,17 +29,54 @@
         update message_type set name = #{name} where id = #{id}
     </update>
 
-    <select id="getCount" parameterType="string" resultType="int">
-        select count(1) from message_type where 1 =1
+    <select id="getSubscribeType" parameterType="manage.vo.MessageType" resultType="manage.vo.MessageType">
+        select *, if(
+          exists(
+            select user_id from subscribe_list
+              where message_type.id  = subscribe_list.type_id
+                and subscribe_list.user_id = #{id}
+          ), 0, 1) as opr
+        from message_type
+        where 1 =1
         <if test="name != null">
-            and name = #{name}
+            and message_type.name like concat(concat('%',#{name}),'%');
         </if>
     </select>
 
-    <select id="getRows" parameterType="string" resultType="manage.vo.MessageType">
-        select * from message_type where 1 =1
+    <select id="getSubscribeTypeCount" parameterType="string" resultType="manage.vo.MessageType">
+        select count(1) from message_type
+        where 1 =1
         <if test="name != null">
-            and name = #{name}
+            and message_type.name like concat(concat('%',#{name}),'%');
         </if>
     </select>
+
+
+    <!-- msg -->
+    <select id="getCount" parameterType="string" resultType="int">
+        select count(1) from message where 1 =1
+        <if test="name != null">
+            and like concat(concat('%',#{name}),'%')
+        </if>
+    </select>
+
+    <select id="getRows" parameterType="string" resultType="manage.vo.Message">
+        select * from message where 1 =1
+        <if test="name != null">
+            and title like concat(concat('%',#{name}),'%')
+        </if>
+    </select>
+
+    <insert id="insertMessage" parameterType="manage.vo.Message">
+        insert into message(title, content, type, createTime, creator, sendTime, target) values
+          (#{title}, #{content}, ${type}, #{createTime}, #{creator}, #{sendTime}, #{target})
+    </insert>
+
+    <delete id="deleteMessage" parameterType="int">
+        delete from message where id = #{id}
+    </delete>
+
+    <update id="updateMessage" parameterType="manage.vo.Message">
+        update message set name = #{name} where id = #{id}
+    </update>
 </mapper>

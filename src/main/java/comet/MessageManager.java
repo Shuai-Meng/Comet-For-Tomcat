@@ -1,5 +1,6 @@
 package comet;
 
+import manage.vo.Message;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -28,7 +29,7 @@ public class MessageManager implements Runnable {
         }
     }
 
-    private void checkTime() {
+    /*private void checkTime() {
         for(Message message : list) {
             long internal = message.getDate().getTime() - System.currentTimeMillis();
 
@@ -38,7 +39,7 @@ public class MessageManager implements Runnable {
             list.remove(message);
             resetTime(message);
         }
-    }
+    }*/
 
     private void resetTime(Message message) {
 
@@ -48,8 +49,8 @@ public class MessageManager implements Runnable {
         while (true) {
             if(list == null || list.size() == 0)
                 getMessageFromDataBase();
-            else
-                checkTime();
+//            else
+//                checkTime();
         }
     }
 }

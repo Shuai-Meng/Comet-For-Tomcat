@@ -23,4 +23,14 @@ public class MessageType {
     public void setId(int id) {
         this.id = id;
     }
+
+    private String operation;
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
 }

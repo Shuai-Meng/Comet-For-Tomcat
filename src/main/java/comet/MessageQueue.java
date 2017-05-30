@@ -1,5 +1,7 @@
 package comet;
 
+import manage.vo.Message;
+
 import java.util.*;
 
 public class MessageQueue implements Runnable {

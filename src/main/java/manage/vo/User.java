@@ -1,9 +1,14 @@
 package manage.vo;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+
 /**
  * Created by m on 17-5-13.
  */
-public class User {
+public class User implements UserDetails{
     private int id;
     private String name;
     private String role;
@@ -51,8 +56,32 @@ public class User {
         this.list = list;
     }
 
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    public String getUsername() {
+        return this.name;
+    }
+
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    public boolean isEnabled() {
+        return false;
     }
 
     public void setPassword(String password) {

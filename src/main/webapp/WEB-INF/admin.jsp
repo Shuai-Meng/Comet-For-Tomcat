@@ -37,7 +37,7 @@
         <div class="searchBar" align="center">
             <strong style="color:green;font-size:19px;">搜索：</strong>
             <input name="key"/>
-            <div class="searchMenu">
+            <div id="roleMenu" style="display: none">
                 <div data-options="name:'ROLE_PUB'">发布者</div>
                 <div data-options="name:'ROLE_SUB'">申请者</div>
                 <div data-options="name:'all'">全部</div>
@@ -45,6 +45,28 @@
         </div><br>
         <!-- 列表 -->
         <table></table>
+    </div>
+
+    <div id="msgEdit" style="display: none">
+        <form>
+            <strong style="font-size:110%;color:green;padding:2px">标题</strong>
+            <input type="text" name="title" style="width:300px;margin:3px"/><br>
+
+            <strong style="font-size:110%;color:green;padding:2px">消息类别</strong>
+            <input name="type">&nbsp;&nbsp;
+
+            <strong style="font-size:110%;color:green;padding:2px">目标用户</strong>
+            <input type="text" name="target"><br>
+
+            <strong style="font-size:110%;color:green;padding:2px">推送方式</strong>
+            <input name="method"/>&nbsp;&nbsp;
+            <input name='sendTime' style="width:60px; display:none"/>
+
+            <textarea name="content" rows="20" cols="150"></textarea>
+        </form>
+        <div>
+            <button>发布</button>
+        </div>
     </div>
 
 
@@ -68,7 +90,7 @@
                                 return s;
                             }
                         });
-                generateTab("auth", "auth", obj.contextPath + "/getUsers", column)
+                generateTab("权限管理", "auth", column);
             });
 
             $("#type").click(function() {
@@ -76,22 +98,90 @@
                         {field:'name',title:'名称',width:200},
                         {field:'operation',title:'操作',width:160, align:'center',
                             formatter:function(value,row){
-                                var s = '<input type="button" class = "handle" name="delete" value="delete"/>';
-                                var p = '<input type="button" class = "handle" name="modify" value="modify"/>';
+                                var s = '<input type="button" class = "handle" name="delete" value="删除"/>';
+                                var p = '<input type="button" class = "handle" name="modify" value="修改"/>';
                                 return s + " " + p;
                             }
                         });
-                generateTab("type", "type", obj.contextPath + "/getMessageType", column);
+                generateTab("消息类别管理", "type", column);
             });
 
+            $("#message").click(function() {
+               var column = new Array({field:'id',title:'编号',width:100,align:'left'},
+                       {field:'name',title:'title',width:200},
+                       {field:'type',title:'type',width:200},
+                       {field:'createTime',title:'createTime',width:200},
+                       {field:'creator',title:'creator',width:200},
+                       {field:'operation',title:'操作',width:160, align:'center',
+                           formatter:function(value,row){
+                               var s = '<input type="button" class = "handle" name="delete" value="删除"/>';
+                               var p = '<input type="button" class = "handle" name="modify" value="修改"/>';
+                               return s + " " + p;
+                           }
+                       }
+               );
+                generateTab("消息管理", "message", column);
+            });
 
+            $("#subscribe").click(function() {
+                var column = new Array({field:'id',title:'编号',width:100,align:'left'},
+                        {field:'name',title:'名称',width:200},
+                        {field:'operation',title:'操作',width:160, align:'center',
+                            formatter:function(value,row){
+                                if(value == "1")
+                                    return '<input type="button" class = "handle" name="sub" value="订阅"/>';
+                                else
+                                    return '<input type="button" class = "handle" name="desub" value="取消订阅"/>';
+                            }
+                        });
+                generateTab("消息类别管理", "type", column);
+            });
         });
 
-        function addClickForButton() {
+        function generateTab(name, id, column) {
+            if (obj.$tabs.tabs('exists', id)) {
+                obj.$tabs.tabs('select', id);
+                return;
+            }
 
+            var $div = $("#dirTab").clone(true);
+            $div.attr("id", id);
+
+            obj.$tabs.tabs('add', {
+                title: name,
+                content: $div[0],
+                closable: true
+            });
+
+            var json = {};
+            var $table = $div.find('table');
+            var $menu = null;
+
+            var url = obj.contextPath + "/getMessage";
+            if(id == "auth") {
+                url = obj.contextPath + "/getUsers";
+                $menu = '#roleMenu';
+            } else if(id == "type")
+                url = obj.contextPath + "/getMessageType";
+            else
+                url = obj.contextPath + "/getSubscribeType";
+
+            $div.find('input').searchbox({
+                width:300,
+                prompt:'请输入关键字',
+                menu: $menu,
+                searcher: function(key, value) {
+                    json['key'] = key;
+                    if(id == "auth")
+                        json['role'] = value;
+
+                    $table.datagrid('load', json);
+                },
+            });
+            generateTable($table, url, json, column, id);
         }
 
-        function generateTable($table, url, json, column, handle) {
+        function generateTable($table, url, json, column, flag) {
             $table.datagrid({
                 width: 'auto',
                 height: 'auto',
@@ -104,15 +194,38 @@
                 url: url,
                 queryParams: json,
                 columns:[column],
+                toolbar:[ {
+                    text:'add',
+                    iconCls:'icon-add',
+                    handler: function() {
+                        if(flag == "type")
+                            editType();
+                        else if(flag == "message")
+                            editMessage(0, "new");
+                    }
+                }],
                 onLoadSuccess: function(data) {
                     $(".handle").click(function() {
                         var row = $table.datagrid('getSelected');
                         if(row == null)
                             return;//interesting, auto selected
 
-                        handle(row, this.name);//name? field?
+                        if(flag == "auth")
+                            handleAuth(row, this.name);//name? field?
+                        else if(flag == "type")
+                            handleType(row, this.name);
+                        else if(flag == "message")
+                            handleMessage(row, this.name);
+                        else
+                            handleSubscribe(row, this.name);
+
                         $table.datagrid('load', json);
                     });
+                },
+                onDblClickRow: function(rowIndex, rowData) {
+                    if(flag == "message") {
+
+                    }
                 }
             });
         }
@@ -143,40 +256,6 @@
             });
         }
 
-        function generateTab(name, id, url, column) {
-            if (obj.$tabs.tabs('exists', id)) {
-                obj.$tabs.tabs('select', id);
-                return;
-            }
-
-            var $div = $("#dirTab").clone(true);
-            $div.attr("id", id);
-
-            obj.$tabs.tabs('add', {
-                title: name,
-                content: $div[0],
-                closable: true
-            });
-
-            var json = {};
-            var $table = $div.find('table');
-            $div.find('input').searchbox({
-                width:300,
-                prompt:'请输入关键字',
-                menu: $div.find('.searchMenu'),
-                searcher: function(name, value) {
-                    json['name'] = name;
-                    json['role'] = value;
-                    $table.datagrid('load', json);
-                },
-            });
-
-            if(id != 'auth')
-                $div.remove(".searchMenu");
-
-            generateTable($table, url, json, column, handleType);
-        }
-
         function handleType(row, flag) {
             //TODO
             $.ajax({
@@ -192,6 +271,87 @@
             });
         }
 
+        function handleMessage(row, flag) {
+            $.ajax({
+                url: obj.contextPath + "/modifyMessage",
+                type: 'post',
+                data: {"id": row.id, "name": row.name, "operation": flag},
+                success: function (data) {
+                    $.messager.alert('info', obj.message.actionSuccess);
+                },
+                error: function() {
+                    $.messager.alert('info', obj.message.actionFail);
+                }
+            });
+        }
+
+        function handleSubscribe(row, flag) {
+
+        }
+
+        function editMessage(id, operation) {
+            if (obj.$tabs.tabs('exists', id)) {
+                obj.$tabs.tabs('select', id);
+                return;
+            }
+
+            var $div = $("#msgEdit").clone(true);
+            $div.attr("id", id).show();
+
+            obj.$tabs.tabs('add', {
+                title: id,
+                content: $div[0],
+                closable: true
+            });
+
+            $div.find('input[name="target"]').combobox({
+                url: obj.contextPath + "/getUser?type=1",
+                valueField: 'id',
+                textField: 'name',
+                multiple: true,
+            });
+
+            $div.find('input[name="type"]').combobox({
+                url: obj.contextPath + "/getMessageTypes",
+                valueField: 'id',
+                textField: 'name',
+                onSelect: function(data) {
+//                    $div.find('input[name="target"]').combobox('reload', obj.contextPath + "/getUser?type=" + data.id);
+                },
+                editable: false
+            });
+
+            $div.find('input[name="method"]').combobox({
+                data: [{label: '立即推送', 'id': '1'},
+                    {label: '定时推送', 'id': '2'},
+                ],
+                valueField: 'id',
+                textField: 'label',
+                onSelect: function(data) {
+                    if(data.id == '2') {
+                        $div.find('input[name="sendTime"]').datetimebox({
+                            required: true,
+                            showSeconds: false
+                        }).show();
+                    }
+                },
+                required: true
+            });
+
+            $div.find('button').click(function() {
+                $.ajax({
+                    url:obj.contextPath + "/addMessage",
+                    type: 'post',
+                    data: $div.find('form').serialize(),
+                    success: function() {
+
+                    },
+                    error: function() {
+
+                    }
+                })
+            });
+        }
     })({
         contextPath: "<%=request.getContextPath()%>/manage",
         $tabs: $("#tabs"),
