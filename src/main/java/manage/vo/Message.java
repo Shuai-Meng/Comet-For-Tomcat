@@ -1,19 +1,29 @@
 package manage.vo;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by m on 17-5-10.
  */
-public class Message {
+public class Message implements Serializable{
     private int id;
-    private String type;
+    private int type;
     private String title;
     private String content;
     private String creator;
     private Date creatTime;
     private Date sendTime;
     private String method;
+    private String valid;
+
+    public String getValid() {
+        return valid;
+    }
+
+    public void setValid(String valid) {
+        this.valid = valid;
+    }
 
     public String getMethod() {
         return method;
@@ -39,11 +49,11 @@ public class Message {
         this.id = id;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 

@@ -82,6 +82,7 @@ public class ManageServiceImpl implements ManageService{
         SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
         message.setCreator(securityUser.getUsername());
         message.setCreatTime(new Date());
+        message.setValid("1");
 
         if("1".equals(message.getMethod())) {
             message.setSendTime(null);

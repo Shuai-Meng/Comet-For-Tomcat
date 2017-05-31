@@ -1,6 +1,8 @@
 package comet;
 
+import manage.dao.MessageMapper;
 import manage.vo.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -11,8 +13,10 @@ import java.util.*;
  * Created by m on 17-5-12.
  */
 public class MessageManager implements Runnable {
-    private List<Message> list;
+    private List<Message> list = new ArrayList<Message>();
     private static MessageQueue messageQueue;
+    @Autowired
+    MessageMapper messageMapper;
 
     static {
         WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
@@ -20,37 +24,23 @@ public class MessageManager implements Runnable {
         messageQueue = (MessageQueue)servletContext.getAttribute("messageQueue");
     }
 
-    private synchronized void getMessageFromDataBase() {
-        list = new ArrayList<Message>();
-        try {
-            wait();
-        } catch (InterruptedException e) {
-
-        }
+    private void getLatestMessages() {
+        list.addAll(messageMapper.getLatestMessages());
     }
 
-    /*private void checkTime() {
+    private void pushMessageToQueue() {
         for(Message message : list) {
-            long internal = message.getDate().getTime() - System.currentTimeMillis();
-
-            if(internal < 60000 || internal > -60000)
-                messageQueue.addMessage(message);
-
+            messageQueue.addMessage(message);
             list.remove(message);
-            resetTime(message);
         }
-    }*/
-
-    private void resetTime(Message message) {
-
     }
 
     public void run() {
         while (true) {
-            if(list == null || list.size() == 0)
-                getMessageFromDataBase();
-//            else
-//                checkTime();
+            if(list.size() == 0)
+                getLatestMessages();
+            else
+                pushMessageToQueue();
         }
     }
 }

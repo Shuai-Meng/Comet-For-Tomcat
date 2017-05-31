@@ -12,12 +12,13 @@
     <title>管理页面</title>
     <script src="<%= request.getContextPath()%>/js/jquery.min.js"></script>
     <script src="<%= request.getContextPath()%>/js/jquery.easyui.min.js"></script>
+    <script src="<%= request.getContextPath()%>/js/comet.js"></script>
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/default/validatebox.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/icon.css">
 </head>
 <body class="easyui-layout" style="overflow:auto">
-    <div region="west" style="left: 0px; width: 214px;" class="easyui-layout" split="true" title="menu">
+    <div region="west" style="left: 0px; width: 214px;" class="easyui-layout" split="true" title="菜单">
         <div class="easyui-accordion" fit="true" style="overflow:auto;width:193px">
             <button id="auth">权限管理</button><br>
             <button id="type">消息类别管理</button><br>
@@ -60,7 +61,7 @@
 
             <strong style="font-size:110%;color:green;padding:2px">推送方式</strong>
             <input name="method"/>&nbsp;&nbsp;
-            <input name='sendTime' style="width:60px; display:none"/>
+            <input name='sendTime' style="width:160px; display:none"/>
 
             <textarea name="content" rows="20" cols="150"></textarea>
         </form>
@@ -68,7 +69,6 @@
             <button>发布</button>
         </div>
     </div>
-
 
     <script>
     (function(obj) {
@@ -108,10 +108,9 @@
 
             $("#message").click(function() {
                var column = new Array({field:'id',title:'编号',width:100,align:'left'},
-                       {field:'name',title:'title',width:200},
+                       {field:'title',title:'title',width:200},
                        {field:'type',title:'type',width:200},
-                       {field:'createTime',title:'createTime',width:200},
-                       {field:'creator',title:'creator',width:200},
+                       {field:'valid',title:'valid',width:200},
                        {field:'operation',title:'操作',width:160, align:'center',
                            formatter:function(value,row){
                                var s = '<input type="button" class = "handle" name="delete" value="删除"/>';
@@ -140,6 +139,7 @@
 
         function generateTab(name, id, column) {
             if (obj.$tabs.tabs('exists', id)) {
+                alert("exist")
                 obj.$tabs.tabs('select', id);
                 return;
             }
@@ -181,7 +181,7 @@
             generateTable($table, url, json, column, id);
         }
 
-        function generateTable($table, url, json, column, whetherApplying) {
+        function generateTable($table, url, json, column, id) {
             $table.datagrid({
                 width: 'auto',
                 height: 'auto',
@@ -198,9 +198,10 @@
                     text:'add',
                     iconCls:'icon-add',
                     handler: function() {
-                        if(whetherApplying == "type")
+                        alert(id)
+                        if(id == "type")
                             editType();
-                        else if(whetherApplying == "message")
+                        else if(id == "message")
                             editMessage(0, "new");
                     }
                 }],
@@ -229,6 +230,8 @@
                 }
             });
         }
+
+        function editType() {}
 
         function handleAuth(row, whetherApplying) {
             var json = {};
@@ -300,10 +303,10 @@
         }
 
         function editMessage(id, operation) {
-            if (obj.$tabs.tabs('exists', id)) {
+            /*if (obj.$tabs.tabs('exists', id)) {
                 obj.$tabs.tabs('select', id);
                 return;
-            }
+            }*/
 
             var $div = $("#msgEdit").clone(true);
             $div.attr("id", id).show();
@@ -324,6 +327,11 @@
                 editable: false
             });
 
+            $div.find('input[name="sendTime"]').datetimebox({
+                required: true,
+                showSeconds: false
+            });
+
             $div.find('input[name="method"]').combobox({
                 data: [{label: '立即推送', 'id': '1'},
                     {label: '定时推送', 'id': '2'},
@@ -332,10 +340,7 @@
                 textField: 'label',
                 onSelect: function(data) {
                     if(data.id == '2') {
-                        $div.find('input[name="sendTime"]').datetimebox({
-                            required: true,
-                            showSeconds: false
-                        }).show();
+                        $div.find('input[name="sendTime"]').show();
                     }
                 },
                 required: true

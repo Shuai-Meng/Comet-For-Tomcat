@@ -4,6 +4,7 @@ import manage.vo.Message;
 import manage.vo.MessageType;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,9 +21,13 @@ public interface MessageMapper {
     void updateType(MessageType messageType);
     void insertType(String name);
 
-    List<MessageType> getRows(String name);
+    List<Message> getRows(String name);
     int getCount(String name);
     void deleteMessage(int id);
     void updateMessage(Message message);
     void insertMessage(Message message);
+
+    List<Integer> getUserIdOfType(@Param("typeId")int type);
+
+    List<Message> getLatestMessages();
 }

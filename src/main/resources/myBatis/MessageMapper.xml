@@ -51,6 +51,9 @@
         </if>
     </select>
 
+    <select id="getUserIdOfType" resultType="int">
+        select user_id from subscribe_list where type_id = #{typeId}
+    </select>
 
     <!-- msg -->
     <select id="getCount" parameterType="string" resultType="int">
@@ -65,6 +68,11 @@
         <if test="name != null">
             and title like concat(concat('%',#{name}),'%')
         </if>
+    </select>
+
+    <select id="getLatestMessages" resultType="manage.vo.Message">
+        select * from message WHERE valid = 1 and send_time &gt;= now()
+          and send_time &lt; now() + 100
     </select>
 
     <insert id="insertMessage" parameterType="manage.vo.Message">
