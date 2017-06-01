@@ -14,25 +14,18 @@ import java.util.*;
  */
 public class MessageManager implements Runnable {
     private List<Message> list = new ArrayList<Message>();
-    private static MessageQueue messageQueue;
     @Autowired
     MessageMapper messageMapper;
-
-    static {
-        WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
-        ServletContext servletContext = webApplicationContext.getServletContext();
-        messageQueue = (MessageQueue)servletContext.getAttribute("messageQueue");
-    }
 
     private void getLatestMessages() {
         list.addAll(messageMapper.getLatestMessages());
     }
 
     private void pushMessageToQueue() {
-        for(Message message : list) {
-            messageQueue.addMessage(message);
-            list.remove(message);
-        }
+        for(Message message : list)
+            MessageQueue.getMessageQueue().addMessage(message);
+
+        list.clear();
     }
 
     public void run() {

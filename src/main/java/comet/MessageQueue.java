@@ -12,22 +12,32 @@ import java.util.*;
 public class MessageQueue implements Runnable {
     @Autowired
     MessageMapper messageMapper;
-    private List<Message> messageQuque;
+    private volatile static MessageQueue messageQueue;
+    private List<Message> messageList = new ArrayList<Message>();
 
-    public MessageQueue() {
-        this.messageQuque = new ArrayList<Message>();
+    private MessageQueue() {}
+
+    public static MessageQueue getMessageQueue() {
+        if(messageQueue == null) {
+            synchronized(MessageQueue.class) {
+                if(messageQueue == null)
+                    messageQueue = new MessageQueue();
+            }
+        }
+
+        return messageQueue;
     }
 
     public synchronized void addMessage(Message message) {
-        if(messageQuque.size() >= 100)
+        if(messageList.size() >= 100)
             sendMessage();
 
-        messageQuque.add(message);
+        messageList.add(message);
         notifyAll();
     }
 
     private void sendMessage() {
-        for(Message message : messageQuque) {
+        for(Message message : messageList) {
             System.out.println("sending...");
             List<Integer> userList = getUserIdOfType(message.getType());
             for(int userId : userList) {
@@ -45,7 +55,7 @@ public class MessageQueue implements Runnable {
 
             updateMessage(message);
         }
-        messageQuque.clear();
+        messageList.clear();
     }
 
     private void updateMessage(Message message) {
@@ -60,7 +70,7 @@ public class MessageQueue implements Runnable {
     public void run() {
         while(true) {
             synchronized (this) {
-                if(messageQuque.size() == 0) {
+                if(messageList.size() == 0) {
                     try {
                         wait();
                     } catch (InterruptedException e) {

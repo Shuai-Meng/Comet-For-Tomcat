@@ -87,9 +87,7 @@ public class ManageServiceImpl implements ManageService{
         if("1".equals(message.getMethod())) {
             message.setSendTime(null);
 
-            WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
-            ServletContext servletContext = webApplicationContext.getServletContext();
-            MessageQueue messageQueue = (MessageQueue)servletContext.getAttribute("messageQueue");
+            MessageQueue messageQueue = MessageQueue.getMessageQueue();
             messageQueue.addMessage(message);
         }
 
