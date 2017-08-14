@@ -21,6 +21,7 @@ public class MyUserServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         List<MyUser> list = userMapper.selectUserByName(name);
+        userMapper.selectUserByName1("admin");
 
         if (list == null || list.isEmpty())
             throw new UsernameNotFoundException(name + " not found!");
