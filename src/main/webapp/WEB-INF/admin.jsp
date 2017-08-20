@@ -11,8 +11,8 @@
 <head>
     <title>管理页面</title>
     <script src="<%= request.getContextPath()%>/js/jquery.min.js"></script>
-    <script src="<%= request.getContextPath()%>/js/jquery.easyui.min.js"></script>
     <script src="<%= request.getContextPath()%>/js/comet.js"></script>
+    <script src="<%= request.getContextPath()%>/js/jquery.easyui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/default/validatebox.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/icon.css">
@@ -198,7 +198,7 @@
                     text:'add',
                     iconCls:'icon-add',
                     handler: function() {
-                        alert(id)
+                        //alert(id)
                         if(id == "type")
                             editType();
                         else if(id == "message")

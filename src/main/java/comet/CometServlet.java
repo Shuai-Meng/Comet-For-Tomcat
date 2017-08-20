@@ -1,35 +1,38 @@
 package comet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import manage.vo.SecurityUser;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
-import utils.SpringSecurityUtil;
-
+import org.springframework.security.core.context.SecurityContext;
 
 public class CometServlet extends HttpServlet  implements CometProcessor {
 	private Map<Integer, CometEvent> container;
-	private Set<String> session;
 
 	public void init() {
 		container = Container.getContainer();
-		session = Container.getSession();
 	}
 
 	public void event(CometEvent event) throws IOException, ServletException {
-		int userId = SpringSecurityUtil.getCurrentUser().getUserId();
+		int userId = getUserID(event);
 
 		if (event.getEventType() == CometEvent.EventType.BEGIN) {
-			event.setTimeout(15000);
-			saveConnection(userId, event);
+			event.setTimeout(60000);
+			container.put(userId, event);
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
+			if (event.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
+			    event.getHttpServletResponse().setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
+			}
 			event.close();
-            container.remove(userId);
+			container.remove(userId);
 		} else if (event.getEventType() == CometEvent.EventType.END) {
 			event.close();
             container.remove(userId);
@@ -38,26 +41,11 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
 		}
 	}
 
-	private void saveConnection(int userId, CometEvent event) {
-		if(!checkExists(event)) {
-			container.put(userId, event);
-			session.add(event.getHttpServletRequest().getRequestedSessionId());
-		}
-	}
-
-	private boolean checkExists(CometEvent event) {
-		if(session.contains(event.getHttpServletRequest().getRequestedSessionId())) {
-			PrintWriter writer = null;
-			try {
-				writer = event.getHttpServletResponse().getWriter();
-				writer.println("exists");
-				writer.flush();
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return true;
-		}
-		return false;
+	private int getUserID(CometEvent event) {
+		HttpServletRequest httpServletRequest = event.getHttpServletRequest();
+		HttpSession httpSession = httpServletRequest.getSession(false);
+		SecurityContext securityContext = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
+		Object principal = securityContext.getAuthentication().getPrincipal();
+		return ((SecurityUser) principal).getUserId();
 	}
 }

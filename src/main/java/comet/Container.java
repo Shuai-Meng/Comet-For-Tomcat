@@ -10,13 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Container {
     private static Map<Integer, CometEvent> container = new ConcurrentHashMap<Integer, CometEvent>();
-    private static Set<String> session = new HashSet();
 
     private Container() {}
 
     public static Map<Integer, CometEvent> getContainer() {
         return container;
     }
-
-    public static Set<String> getSession() { return session;}
 }

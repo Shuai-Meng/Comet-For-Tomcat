@@ -9,11 +9,8 @@ import manage.vo.MyUser;
 import manage.vo.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 import utils.SpringSecurityUtil;
 
-import javax.servlet.ServletContext;
 import java.util.*;
 
 /**
@@ -81,13 +78,13 @@ public class ManageServiceImpl implements ManageService{
     public void addMessage(Message message) {
         SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
         message.setCreator(securityUser.getUsername());
-        message.setCreatTime(new Date());
+        message.setCreateTime(new Date());
         message.setValid("1");
 
         if("1".equals(message.getMethod())) {
             message.setSendTime(null);
 
-            MessageQueue messageQueue = MessageQueue.getMessageQueue();
+            MessageQueue messageQueue = MessageQueue.getOnlyInstance();
             messageQueue.addMessage(message);
         }
 

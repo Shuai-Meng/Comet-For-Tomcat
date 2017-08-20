@@ -76,7 +76,7 @@
     </select>
 
     <insert id="insertMessage" parameterType="manage.vo.Message">
-        insert into message(title, content, type, createTime, creator, sendTime) values
+        insert into message(title, content, type, create_time, creator, send_time) values
           (#{title}, #{content}, ${type}, #{createTime}, #{creator}, #{sendTime})
     </insert>
 

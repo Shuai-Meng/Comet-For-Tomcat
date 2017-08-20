@@ -1,14 +1,11 @@
 package comet;
 
-import javax.servlet.*;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
-public class Listener  implements ServletContextListener{
+public class Listener implements ApplicationListener<ContextRefreshedEvent> {
 
-	public void contextDestroyed(ServletContextEvent arg0) {
-	}
-
-	public void contextInitialized(ServletContextEvent e) {
-		new Thread(MessageQueue.getMessageQueue()).start();
-        new Thread(new MessageManager()).start();
-	}
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        new Thread(MessageQueue.getOnlyInstance()).start();
+    }
 }

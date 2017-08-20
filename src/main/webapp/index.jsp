@@ -20,13 +20,14 @@
 	
 	function comet() {
 		$.get(root+"/test", function(data) {
-			console.log("data: "+data);
-			comet();
+		    if (data != "exists") {
+                comet();
+            }
 		});
 	}
 	
 	function send() {
-		$.post(root+"/manage/add", {'msg':$('#send').val()});
+		$.post(root+"/manage/addMessage", {'msg':$('#send').val()});
 	}
 </script>
 </body>

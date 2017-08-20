@@ -96,6 +96,7 @@ public class ManageController {
     }
 
     @RequestMapping(value = "/addMessage")
+    @ResponseBody
     public void addMessage(Message message) {
         manageService.addMessage(message);
     }

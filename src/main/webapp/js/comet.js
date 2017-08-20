@@ -7,10 +7,22 @@ $(function() {
 });
 
 function comet() {
-    $.get("/comet/test", function(data) {
-        if(data != "exist") {
-            window.alert(data.title + data.content);
+
+    $.ajax({
+        type: 'get',
+        url: "/comet/test",
+        dataType: 'json',
+        success: function (data) {
+            console.log("[" + data.title + "]");
+            comet();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log(XMLHttpRequest.status);
+            if (XMLHttpRequest.status == 408) {
+                comet();
+            } else {
+                console.log(errorThrown);
+            }
         }
-    });
-    comet();
+    })
 }

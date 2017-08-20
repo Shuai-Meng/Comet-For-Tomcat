@@ -2,11 +2,7 @@ package comet;
 
 import manage.dao.MessageMapper;
 import manage.vo.Message;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContext;
 import java.util.*;
 
 /**
@@ -14,7 +10,6 @@ import java.util.*;
  */
 public class MessageManager implements Runnable {
     private List<Message> list = new ArrayList<Message>();
-    @Autowired
     MessageMapper messageMapper;
 
     private void getLatestMessages() {
@@ -23,7 +18,7 @@ public class MessageManager implements Runnable {
 
     private void pushMessageToQueue() {
         for(Message message : list)
-            MessageQueue.getMessageQueue().addMessage(message);
+            MessageQueue.getOnlyInstance().addMessage(message);
 
         list.clear();
     }

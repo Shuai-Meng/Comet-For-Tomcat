@@ -1,31 +1,27 @@
 package comet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import manage.dao.MessageMapper;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
-import org.springframework.beans.factory.annotation.Autowired;
+import utils.SpringUtil;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
 public class MessageQueue implements Runnable {
-    @Autowired
-    MessageMapper messageMapper;
-    private volatile static MessageQueue messageQueue;
-    private List<Message> messageList = new ArrayList<Message>();
 
-    private MessageQueue() {}
+    private static MessageQueue onlyInstance = new MessageQueue();
+    private MessageMapper messageMapper;
+    private List<Message> messageList;
 
-    public static MessageQueue getMessageQueue() {
-        if(messageQueue == null) {
-            synchronized(MessageQueue.class) {
-                if(messageQueue == null)
-                    messageQueue = new MessageQueue();
-            }
-        }
+    private MessageQueue() {
+        messageList = new ArrayList<Message>();
+        messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
+    }
 
-        return messageQueue;
+    public static MessageQueue getOnlyInstance() {
+        return onlyInstance;
     }
 
     public synchronized void addMessage(Message message) {
@@ -42,20 +38,29 @@ public class MessageQueue implements Runnable {
             List<Integer> userList = getUserIdOfType(message.getType());
             for(int userId : userList) {
                 CometEvent event = Container.getContainer().get(userId);
-                PrintWriter writer;
-                try {
-                    writer = event.getHttpServletResponse().getWriter();
-                    writer.println(message);
-                    writer.flush();
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (event != null) {
+                    doSend(event, message);
+                } else {
+
                 }
             }
-
-            updateMessage(message);
+//            updateMessage(message);
         }
         messageList.clear();
+    }
+
+    private void doSend(CometEvent event, Message message) {
+        try {
+            PrintWriter writer = event.getHttpServletResponse().getWriter();
+            ObjectMapper objectMapper = new ObjectMapper();
+            System.out.println(objectMapper.writeValueAsString(message));
+            writer.println(objectMapper.writeValueAsString(message));
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            System.out.println(Thread.currentThread().isAlive());
+            e.printStackTrace();
+        }
     }
 
     private void updateMessage(Message message) {

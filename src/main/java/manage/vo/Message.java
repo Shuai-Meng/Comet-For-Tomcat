@@ -7,13 +7,13 @@ import java.util.*;
  * Created by m on 17-5-10.
  */
 public class Message implements Serializable{
-    private int id;
-    private int type;
+    private int    id;
+    private int    type;
     private String title;
     private String content;
     private String creator;
-    private Date creatTime;
-    private Date sendTime;
+    private Date   createTime;
+    private Date   sendTime;
     private String method;
     private String valid;
 
@@ -73,12 +73,12 @@ public class Message implements Serializable{
         this.creator = creator;
     }
 
-    public Date getCreatTime() {
-        return creatTime;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setCreatTime(Date creatTime) {
-        this.creatTime = creatTime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public Date getSendTime() {
