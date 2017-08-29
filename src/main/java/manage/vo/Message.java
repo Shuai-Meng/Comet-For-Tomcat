@@ -11,26 +11,16 @@ public class Message implements Serializable{
     private int    type;
     private String title;
     private String content;
-    private String creator;
-    private Date   createTime;
+    private String publisher;
     private Date   sendTime;
-    private String method;
-    private String valid;
+    private String immediate;//是否即时推送，0否1是
 
-    public String getValid() {
-        return valid;
+    public String getImmediate() {
+        return immediate;
     }
 
-    public void setValid(String valid) {
-        this.valid = valid;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
+    public void setImmediate(String immediate) {
+        this.immediate = immediate;
     }
 
     public String getContent() {
@@ -65,20 +55,12 @@ public class Message implements Serializable{
         this.title = title;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getPublisher() {
+        return publisher;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     public Date getSendTime() {

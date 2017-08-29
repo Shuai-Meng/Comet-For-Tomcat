@@ -29,5 +29,5 @@ public interface MessageMapper {
 
     List<Integer> getUserIdOfType(@Param("typeId")int type);
 
-    List<Message> getLatestMessages();
+    List<Message> getMessagesOfNextMin(Date date);
 }

@@ -77,15 +77,11 @@ public class ManageServiceImpl implements ManageService{
 
     public void addMessage(Message message) {
         SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
-        message.setCreator(securityUser.getUsername());
-        message.setCreateTime(new Date());
-        message.setValid("1");
+        message.setPublisher(securityUser.getUsername());
 
-        if("1".equals(message.getMethod())) {
-            message.setSendTime(null);
-
-            MessageQueue messageQueue = MessageQueue.getOnlyInstance();
-            messageQueue.addMessage(message);
+        if("1".equals(message.getImmediate())) {
+            message.setSendTime(new Date());
+            MessageQueue.getSingleInstance().addMessage(message);
         }
 
         messageMapper.insertMessage(message);

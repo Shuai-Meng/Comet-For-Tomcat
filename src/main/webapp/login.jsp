@@ -14,7 +14,7 @@
 <div class="error  ${param.error == true ? '' : 'hide'}">
     <%--${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}--%>
 </div>
-<form action="/j_spring_security_check" method="post">
+<form action="/j_spring_security_check" immediate="post">
     <fieldset>
         <legend>登陆</legend>
         用户： <input type="text" name="j_username" style="width:150px;"/><br />

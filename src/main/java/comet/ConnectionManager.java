@@ -8,10 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by m on 17-5-4.
  */
-public class Container {
+public class ConnectionManager {
     private static Map<Integer, CometEvent> container = new ConcurrentHashMap<Integer, CometEvent>();
 
-    private Container() {}
+    private ConnectionManager() {}
 
     public static Map<Integer, CometEvent> getContainer() {
         return container;

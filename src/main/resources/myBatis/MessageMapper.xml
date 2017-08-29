@@ -70,14 +70,13 @@
         </if>
     </select>
 
-    <select id="getLatestMessages" resultType="manage.vo.Message">
-        select * from message WHERE valid = 1 and send_time &gt;= now()
-          and send_time &lt; now() + 100
+    <select id="getMessagesOfNextMin" parameterType="java.util.Date" resultType="manage.vo.Message">
+        select * from message WHERE send_time = #{date}
     </select>
 
     <insert id="insertMessage" parameterType="manage.vo.Message">
-        insert into message(title, content, type, create_time, creator, send_time) values
-          (#{title}, #{content}, ${type}, #{createTime}, #{creator}, #{sendTime})
+        insert into message(title, content, type, immediate, publisher, send_time) values
+          (#{title}, #{content}, ${type}, #{immediate}, #{publisher}, #{sendTime})
     </insert>
 
     <delete id="deleteMessage" parameterType="int">

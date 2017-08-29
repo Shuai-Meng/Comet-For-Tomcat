@@ -60,7 +60,7 @@
             <%--<input type="text" name="target"><br>--%>
 
             <strong style="font-size:110%;color:green;padding:2px">推送方式</strong>
-            <input name="method"/>&nbsp;&nbsp;
+            <input name="immediate"/>&nbsp;&nbsp;
             <input name='sendTime' style="width:160px; display:none"/>
 
             <textarea name="content" rows="20" cols="150"></textarea>
@@ -211,11 +211,11 @@
                         if(row == null)
                             return;//interesting, auto selected
 
-                        if(whetherApplying == "auth")
+                        if(id == "auth")
                             handleAuth(row, this.name);//name? field?
-                        else if(whetherApplying == "type")
+                        else if(id == "type")
                             handleType(row, this.name);
-                        else if(whetherApplying == "message")
+                        else if(id == "message")
                             handleMessage(row, this.name);
                         else
                             handleSubscribe(row, this.name);
@@ -224,7 +224,7 @@
                     });
                 },
                 onDblClickRow: function(rowIndex, rowData) {
-                    if(whetherApplying == "message") {
+                    if(id == "message") {
 
                     }
                 }
@@ -233,17 +233,17 @@
 
         function editType() {}
 
-        function handleAuth(row, whetherApplying) {
+        function handleAuth(row, operation) {
             var json = {};
             json["id"] = row.id;
 
-            if(whetherApplying == "degrage")
+            if(operation == "degrage")
                 json["role"] = "ROLE_SUB";
-            else if(whetherApplying == "agree")
+            else if(operation == "agree")
                 json["role"] = "ROLE_PUB";
             else {
                 json["role"] = "ROLE_SUB";
-                json["whetherApplying"] = "0";
+                json["operation"] = "0";
             }
 
             $.ajax({
@@ -259,12 +259,12 @@
             });
         }
 
-        function handleType(row, whetherApplying) {
+        function handleType(row, operation) {
             //TODO
             $.ajax({
                 url: obj.contextPath + "/modifyType",
                 type: 'post',
-                data: {"id": row.id, "name": row.name, "operation": whetherApplying},
+                data: {"id": row.id, "name": row.name, "operation": operation},
                 success: function (data) {
                     $.messager.alert('info', obj.message.actionSuccess);
                 },
@@ -274,11 +274,11 @@
             });
         }
 
-        function handleMessage(row, whetherApplying) {
+        function handleMessage(row, operation) {
             $.ajax({
                 url: obj.contextPath + "/modifyMessage",
                 type: 'post',
-                data: {"id": row.id, "name": row.name, "operation": whetherApplying},
+                data: {"id": row.id, "name": row.name, "operation": operation},
                 success: function (data) {
                     $.messager.alert('info', obj.message.actionSuccess);
                 },
@@ -288,11 +288,11 @@
             });
         }
 
-        function handleSubscribe(row, whetherApplying) {
+        function handleSubscribe(row, operation) {
             $.ajax({
                 url: obj.contextPath + "subscribe",
                 type: 'post',
-                data: {"typeId": row.id, "operation": whetherApplying},
+                data: {"typeId": row.id, "operation": operation},
                 success: function(data) {
 
                 },
@@ -332,15 +332,17 @@
                 showSeconds: false
             });
 
-            $div.find('input[name="method"]').combobox({
+            $div.find('input[name="immediate"]').combobox({
                 data: [{label: '立即推送', 'id': '1'},
-                    {label: '定时推送', 'id': '2'},
+                    {label: '定时推送', 'id': '0'},
                 ],
                 valueField: 'id',
                 textField: 'label',
                 onSelect: function(data) {
-                    if(data.id == '2') {
+                    if (data.id == '2') {
                         $div.find('input[name="sendTime"]').show();
+                    } else {
+                        $div.find('input[name="sendTime"]').remove();
                     }
                 },
                 required: true

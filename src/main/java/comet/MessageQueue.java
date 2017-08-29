@@ -20,11 +20,12 @@ public class MessageQueue implements Runnable {
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
     }
 
-    public static MessageQueue getOnlyInstance() {
+    public static MessageQueue getSingleInstance() {
         return onlyInstance;
     }
 
     public synchronized void addMessage(Message message) {
+        //TODO 100
         if(messageList.size() >= 100)
             sendMessage();
 
@@ -37,10 +38,11 @@ public class MessageQueue implements Runnable {
             System.out.println("sending...");
             List<Integer> userList = getUserIdOfType(message.getType());
             for(int userId : userList) {
-                CometEvent event = Container.getContainer().get(userId);
+                CometEvent event = ConnectionManager.getContainer().get(userId);
                 if (event != null) {
                     doSend(event, message);
-                } else {
+                } else {//this means the user is offline
+                    //TODO unsend list
 
                 }
             }
@@ -64,7 +66,6 @@ public class MessageQueue implements Runnable {
     }
 
     private void updateMessage(Message message) {
-        message.setValid("0");
         messageMapper.updateMessage(message);
     }
 

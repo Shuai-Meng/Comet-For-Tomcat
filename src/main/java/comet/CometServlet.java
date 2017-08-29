@@ -18,7 +18,7 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
 	private Map<Integer, CometEvent> container;
 
 	public void init() {
-		container = Container.getContainer();
+		container = ConnectionManager.getContainer();
 	}
 
 	public void event(CometEvent event) throws IOException, ServletException {

@@ -7,7 +7,7 @@ $(function() {
 });
 
 function comet() {
-
+    console.log(new Date());
     $.ajax({
         type: 'get',
         url: "/comet/test",

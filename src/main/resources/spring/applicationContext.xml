@@ -22,5 +22,5 @@
 
     <context:component-scan base-package="manage"/>
     <bean class="utils.SpringUtil"/>
-    <bean class="comet.Listener"/>
+    <bean class="comet.ThreadStarter"/>
 </beans>
