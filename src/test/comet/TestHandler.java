@@ -21,8 +21,6 @@ public class TestHandler {
         Class c = DelayedMessageHandler.class;
         Method method = c.getDeclaredMethod("getNextMinute", null);
         method.setAccessible(true);
-        Date date = (Date) method.invoke(DelayedMessageHandler.getSingleInstance(), new Object[]{});
-        System.out.println(date);
         method.setAccessible(false);
     }
 }

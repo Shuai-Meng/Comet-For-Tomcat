@@ -15,13 +15,14 @@ import java.util.concurrent.Executors;
 public class DelayedMessageHandler implements Runnable {
     private static DelayedMessageHandler delayedMessageHandler = new DelayedMessageHandler();
     private MessageMapper messageMapper;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private static ExecutorService executorService;
 
     private DelayedMessageHandler() {
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
     }
 
-    public static DelayedMessageHandler getSingleInstance() {
+    public static DelayedMessageHandler getSingleInstance(ExecutorService executorService) {
+        DelayedMessageHandler.executorService = executorService;
         return delayedMessageHandler;
     }
 
@@ -29,6 +30,7 @@ public class DelayedMessageHandler implements Runnable {
         Date res = new Date();
         long nextMin = res.getTime() / (1000 * 60) + 1;
         res.setTime(nextMin * 1000 * 60);
+        System.out.println("getting msg from database: " + new Date() + " - " + res);
         return res;
     }
 
@@ -44,7 +46,6 @@ public class DelayedMessageHandler implements Runnable {
     public void run() {
         while (true) {
             try {
-                System.out.println(new Date());
                 pushMessageToQueue();
                 Thread.sleep(1000 * 60);
             } catch (InterruptedException e) {
@@ -64,14 +65,17 @@ public class DelayedMessageHandler implements Runnable {
 
         public void run() {
             try {
-                System.out.println(new Date());
-                Thread.sleep(nextMin.getTime() - new Date().getTime());
+                System.out.println("pushing:" + new Date());
+                long interval = nextMin.getTime() - new Date().getTime();
+                if (interval > 0) {
+                    Thread.sleep(interval);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
+            MessageQueue messageQueue = MessageQueue.getSingleInstance();
             for (Message message : list) {
-                MessageQueue messageQueue = MessageQueue.getSingleInstance();
                 messageQueue.addMessage(message);
             }
             list.clear();
