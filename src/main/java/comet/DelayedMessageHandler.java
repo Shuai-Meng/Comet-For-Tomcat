@@ -2,8 +2,11 @@ package comet;
 
 import manage.dao.MessageMapper;
 import manage.vo.Message;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import utils.SpringUtil;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -12,19 +15,20 @@ import java.util.concurrent.Executors;
 /**
  * Created by m on 17-8-22.
  */
-public class DelayedMessageHandler implements Runnable {
-    private static DelayedMessageHandler delayedMessageHandler = new DelayedMessageHandler();
+@Component
+public class DelayedMessageHandler {
+    @Resource
     private MessageMapper messageMapper;
-    private static ExecutorService executorService;
+    private static ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    private DelayedMessageHandler() {
+    /*private DelayedMessageHandler() {
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
     }
 
     public static DelayedMessageHandler getSingleInstance(ExecutorService executorService) {
         DelayedMessageHandler.executorService = executorService;
         return delayedMessageHandler;
-    }
+    }*/
 
     private Date getNextMinute() {
         Date res = new Date();
@@ -38,20 +42,10 @@ public class DelayedMessageHandler implements Runnable {
         return messageMapper.getMessagesOfNextMin(nextMin);
     }
 
+    @Scheduled(cron = "0 * * * * ?")
     private void pushMessageToQueue() throws InterruptedException {
         Date nextMin = getNextMinute();
         executorService.execute(new Pusher(nextMin, getMessageFromDataBase(nextMin)));
-    }
-
-    public void run() {
-        while (true) {
-            try {
-                pushMessageToQueue();
-                Thread.sleep(1000 * 60);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     class Pusher implements Runnable {

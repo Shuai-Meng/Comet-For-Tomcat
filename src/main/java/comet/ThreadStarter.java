@@ -14,7 +14,6 @@ public class ThreadStarter implements ApplicationListener<ContextRefreshedEvent>
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         if (contextRefreshedEvent.getApplicationContext().getParent() == null) {
             executorService.execute(MessageQueue.getSingleInstance());
-            executorService.execute(DelayedMessageHandler.getSingleInstance(executorService));
         }
     }
 }

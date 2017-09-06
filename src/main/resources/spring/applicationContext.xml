@@ -20,7 +20,8 @@
 	 http://www.springframework.org/schema/util
 	 http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <context:component-scan base-package="manage"/>
+    <context:component-scan base-package="manage,comet"/>
     <bean class="utils.SpringUtil"/>
     <bean class="comet.ThreadStarter"/>
+    <task:annotation-driven />
 </beans>

@@ -3,6 +3,7 @@ package manage.dao;
 import manage.vo.Message;
 import manage.vo.MessageType;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * Created by m on 17-5-21.
  */
+@Repository
 public interface MessageMapper {
     List<MessageType> getTypeRows(String name);
     int getTypeCount(@Param("name")String name);
