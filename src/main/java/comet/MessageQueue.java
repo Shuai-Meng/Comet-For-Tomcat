@@ -1,7 +1,8 @@
 package comet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import manage.dao.MessageMapper;
+import manage.mapper.MessageMapper;
+import manage.mapper.UnreadListMapper;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
 import utils.SpringUtil;
@@ -10,14 +11,15 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class MessageQueue implements Runnable {
-
     private static MessageQueue onlyInstance = new MessageQueue();
     private MessageMapper messageMapper;
+    private UnreadListMapper unreadListMapper;
     private List<Message> messageList;
 
     private MessageQueue() {
         messageList = new ArrayList<Message>();
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
+        unreadListMapper = (UnreadListMapper) SpringUtil.getBean("unreadListMapper");
     }
 
     public static MessageQueue getSingleInstance() {
@@ -35,18 +37,18 @@ public class MessageQueue implements Runnable {
 
     private void sendMessage() {
         for(Message message : messageList) {
-            System.out.println("sending...");
-            List<Integer> userList = getUserIdOfType(message.getType());
-            for(int userId : userList) {
+            for(int userId : getUserIdOfType(message.getType())) {
                 CometEvent event = ConnectionManager.getContainer().get(userId);
+
                 if (event != null) {
                     doSend(event, message);
-                } else {//this means the user is offline
-                    //TODO unsend list
-
+                } else {//means the user is offline
+                    Map<String, Integer> map = new HashMap<String, Integer>();
+                    map.put("userId", userId);
+                    map.put("messageId", message.getId());
+                    unreadListMapper.insert(map);
                 }
             }
-//            updateMessage(message);
         }
         messageList.clear();
     }
@@ -63,10 +65,6 @@ public class MessageQueue implements Runnable {
             System.out.println(Thread.currentThread().isAlive());
             e.printStackTrace();
         }
-    }
-
-    private void updateMessage(Message message) {
-        messageMapper.updateMessage(message);
     }
 
     private List<Integer> getUserIdOfType(int type) {

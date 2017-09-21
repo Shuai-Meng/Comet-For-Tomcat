@@ -20,7 +20,7 @@ import java.util.*;
 @RequestMapping("/manage")
 public class ManageController {
     @Resource
-    ManageService manageService;
+    private ManageService manageService;
 
     @RequestMapping(value = "/home")
     public ModelAndView getHomePage() {
@@ -99,5 +99,20 @@ public class ManageController {
     @ResponseBody
     public void addMessage(Message message) {
         manageService.addMessage(message);
+    }
+
+    @RequestMapping(value = "/getUnreadMessages")
+    @ResponseBody
+    public List<Message> getUnreadMessage(int userId) {
+        return manageService.getUnreadMessages(userId);
+    }
+
+    @RequestMapping(value = "/removeUnreadMessage")
+    @ResponseBody
+    public void removeUnreadMessage(HttpServletRequest httpServletRequest) {
+        int userId = Integer.parseInt(httpServletRequest.getParameter("userId"));
+        int messageId = Integer.parseInt(httpServletRequest.getParameter("messageId"));
+
+        manageService.deleteUnreandMessage(userId, messageId);
     }
 }

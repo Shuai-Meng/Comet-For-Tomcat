@@ -1,6 +1,6 @@
 package manage.service.impl;
 
-import manage.dao.UserMapper;
+import manage.mapper.UserMapper;
 import manage.vo.MyUser;
 import manage.vo.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;

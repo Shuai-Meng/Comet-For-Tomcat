@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="manage.dao.UserMapper">
+<mapper namespace="manage.mapper.UserMapper">
     <select id="selectUserByType" parameterType="java.util.Map" resultType="manage.vo.MyUser">
         select user.id, user.name, user.role from user
           inner join subscribe_list on user.id = subscribe_list.user_id

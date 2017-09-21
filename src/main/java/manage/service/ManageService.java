@@ -28,4 +28,8 @@ public interface ManageService {
     Map<String,Object> getSubscribeType(String key);
 
     void subscribe(String typeId, String operation);
+
+    List<Message> getUnreadMessages(int userId);
+
+    void deleteUnreandMessage(int userId, int messageId);
 }

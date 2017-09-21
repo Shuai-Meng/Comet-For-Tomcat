@@ -1,4 +1,4 @@
-package manage.dao;
+package manage.mapper;
 
 import manage.vo.Message;
 import manage.vo.MessageType;

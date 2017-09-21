@@ -1,6 +1,6 @@
 package comet;
 
-import manage.dao.MessageMapper;
+import manage.mapper.MessageMapper;
 import manage.vo.Message;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,8 +16,8 @@ public class DelayedMessageHandler {
     @Resource
     private MessageMapper messageMapper;
 
-    private List<Message> getMessageFromDataBase(Date nextMin) {
-        return messageMapper.getMessagesOfThisMin(nextMin);
+    private List<Message> getMessageFromDataBase(Date date) {
+        return messageMapper.getMessagesOfThisMin(date);
     }
 
     @Scheduled(cron = "0 * * * * ?")

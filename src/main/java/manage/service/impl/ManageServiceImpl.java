@@ -1,7 +1,7 @@
 package manage.service.impl;
 
 import comet.MessageQueue;
-import manage.dao.*;
+import manage.mapper.*;
 import manage.service.ManageService;
 import manage.vo.Message;
 import manage.vo.MessageType;
@@ -19,9 +19,11 @@ import java.util.*;
 @Service
 public class ManageServiceImpl implements ManageService{
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
     @Autowired
-    MessageMapper messageMapper;
+    private MessageMapper messageMapper;
+    @Autowired
+    private UnreadListMapper unreadListMapper;
 
     public Map<String,Object> getUsers(String key, String role) {
         MyUser myUser = new MyUser();
@@ -109,6 +111,17 @@ public class ManageServiceImpl implements ManageService{
             userMapper.subsribe(map);
         else
             userMapper.deSubsribe(map);
+    }
+
+    public List<Message> getUnreadMessages(int userId) {
+        return unreadListMapper.getUnreadList(userId);
+    }
+
+    public void deleteUnreandMessage(int userId, int messageId) {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        map.put("userId", userId);
+        map.put("messageId", messageId);
+        unreadListMapper.delete(map);
     }
 
     public Map<String, Object> getMessage(String key) {

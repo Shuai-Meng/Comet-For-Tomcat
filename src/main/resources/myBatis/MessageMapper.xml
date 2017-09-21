@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="manage.dao.MessageMapper">
+<mapper namespace="manage.mapper.MessageMapper">
     <select id="getTypeCount" parameterType="string" resultType="int">
         select count(1) from message_type where 1 =1
         <if test="name != null">
@@ -70,7 +70,7 @@
         </if>
     </select>
 
-    <select id="getMessagesOfNextMin" parameterType="java.util.Date" resultType="manage.vo.Message">
+    <select id="getMessagesOfThisMin" parameterType="java.util.Date" resultType="manage.vo.Message">
         select * from message WHERE send_time = #{date} and IMMEDIATE = '0'
     </select>
 
