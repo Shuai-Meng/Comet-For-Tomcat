@@ -25,11 +25,10 @@ public interface MessageMapper {
 
     List<Message> getRows(String name);
     int getCount(String name);
-    void deleteMessage(int id);
     void updateMessage(Message message);
     void insertMessage(Message message);
 
     List<Integer> getUserIdOfType(@Param("typeId")int type);
 
-    List<Message> getMessagesOfNextMin(Date date);
+    List<Message> getMessagesOfThisMin(Date date);
 }

@@ -23,4 +23,12 @@ public class TestHandler {
         method.setAccessible(true);
         method.setAccessible(false);
     }
+
+    @Test
+    public void testI() {
+        int i = 0;
+        System.out.println(i++);
+        i = 0;
+        System.out.println(++i);
+    }
 }
