@@ -3,6 +3,7 @@
  */
 
 $(function() {
+    generateWindow("new", "<p>hehehehehehehe</p>");
     comet();
 });
 
@@ -24,5 +25,15 @@ function comet() {
                 console.log(errorThrown);
             }
         }
-    })
+    });
+}
+
+function generateWindow(title, content) {
+   $.messager.show({
+        width:300,
+        height:200,
+        title:title,
+        msg:content,
+        showType:'slide'
+    });
 }
