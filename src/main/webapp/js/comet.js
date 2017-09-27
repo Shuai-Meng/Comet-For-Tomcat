@@ -3,7 +3,7 @@
  */
 
 $(function() {
-    generateWindow("new", "<p>hehehehehehehe</p>");
+    showMessage("efe", "euhgaal;dfj");
     comet();
 });
 
@@ -14,7 +14,7 @@ function comet() {
         url: "/comet/test",
         dataType: 'json',
         success: function (data) {
-            console.log("[" + data.title + "]");
+            showMessage(data.title, data.content);
             comet();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -28,12 +28,14 @@ function comet() {
     });
 }
 
-function generateWindow(title, content) {
+function showMessage(title, content) {
    $.messager.show({
         width:300,
         height:200,
         title:title,
         msg:content,
+        resizable:true,
+        timeout:0,
         showType:'slide'
     });
 }
