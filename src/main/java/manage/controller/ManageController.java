@@ -6,6 +6,7 @@ import manage.vo.MessageType;
 import manage.vo.MyUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -103,16 +104,15 @@ public class ManageController {
 
     @RequestMapping(value = "/getUnreadMessages")
     @ResponseBody
-    public List<Message> getUnreadMessage(int userId) {
-        return manageService.getUnreadMessages(userId);
+    public List<Message> getUnreadMessage() {
+        return manageService.getUnreadMessages();
     }
 
     @RequestMapping(value = "/removeUnreadMessage")
     @ResponseBody
     public void removeUnreadMessage(HttpServletRequest httpServletRequest) {
-        int userId = Integer.parseInt(httpServletRequest.getParameter("userId"));
         int messageId = Integer.parseInt(httpServletRequest.getParameter("messageId"));
 
-        manageService.deleteUnreandMessage(userId, messageId);
+        manageService.deleteUnreandMessage(messageId);
     }
 }

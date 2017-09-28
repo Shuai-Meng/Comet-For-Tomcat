@@ -13,7 +13,7 @@
 
     <select id="getUnreadList" parameterType="java.lang.Integer" resultType="manage.vo.Message">
         select * from message where id in (
-          select message_id from unread_list where user_id = #{user_id}
+          select message_id from unread_list where user_id = #{userId}
         )
     </select>
 </mapper>

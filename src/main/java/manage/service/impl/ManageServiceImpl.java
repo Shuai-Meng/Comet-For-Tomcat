@@ -113,13 +113,15 @@ public class ManageServiceImpl implements ManageService{
             userMapper.deSubsribe(map);
     }
 
-    public List<Message> getUnreadMessages(int userId) {
-        return unreadListMapper.getUnreadList(userId);
+    public List<Message> getUnreadMessages() {
+        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
+        return unreadListMapper.getUnreadList(securityUser.getUserId());
     }
 
-    public void deleteUnreandMessage(int userId, int messageId) {
+    public void deleteUnreandMessage(int messageId) {
+        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
         Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("userId", userId);
+        map.put("userId", securityUser.getUserId());
         map.put("messageId", messageId);
         unreadListMapper.delete(map);
     }

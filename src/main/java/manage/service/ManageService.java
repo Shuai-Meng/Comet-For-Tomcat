@@ -29,7 +29,7 @@ public interface ManageService {
 
     void subscribe(String typeId, String operation);
 
-    List<Message> getUnreadMessages(int userId);
+    List<Message> getUnreadMessages();
 
-    void deleteUnreandMessage(int userId, int messageId);
+    void deleteUnreandMessage(int messageId);
 }
