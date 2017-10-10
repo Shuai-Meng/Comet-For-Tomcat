@@ -27,7 +27,7 @@ public class MessageQueue implements Runnable {
     }
 
     public synchronized void addMessage(Message message) {
-        //TODO 100
+        //TODO redis
         if(messageList.size() >= 100)
             sendMessage();
 
@@ -35,6 +35,7 @@ public class MessageQueue implements Runnable {
         notifyAll();
     }
 
+    //TODO multi thread for efficiency
     private void sendMessage() {
         for(Message message : messageList) {
             for(int userId : getUserIdOfType(message.getType())) {
@@ -43,26 +44,28 @@ public class MessageQueue implements Runnable {
                 if (event != null) {
                     doSend(event, message);
                 } else {//means the user is offline
-                    Map<String, Integer> map = new HashMap<String, Integer>();
-                    map.put("userId", userId);
-                    map.put("messageId", message.getId());
-                    unreadListMapper.insert(map);
+                    storeUnreadMessage(userId, message.getId());
                 }
             }
         }
         messageList.clear();
     }
 
+    private void storeUnreadMessage(int userId, int messageId) {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        map.put("userId", userId);
+        map.put("messageId", messageId);
+        unreadListMapper.insert(map);
+    }
+
     private void doSend(CometEvent event, Message message) {
         try {
             PrintWriter writer = event.getHttpServletResponse().getWriter();
             ObjectMapper objectMapper = new ObjectMapper();
-            System.out.println(objectMapper.writeValueAsString(message));
             writer.println(objectMapper.writeValueAsString(message));
             writer.flush();
             writer.close();
         } catch (Exception e) {
-            System.out.println(Thread.currentThread().isAlive());
             e.printStackTrace();
         }
     }
