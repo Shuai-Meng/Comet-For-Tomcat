@@ -12,7 +12,7 @@ public class ThreadStarter implements ApplicationListener<ContextRefreshedEvent>
     private ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        if (contextRefreshedEvent.getApplicationContext().getParent() == null) {
+        if ("Root WebApplicationContext".equals(contextRefreshedEvent.getApplicationContext().getDisplayName())) {
             executorService.execute(MessageQueue.getSingleInstance());
         }
     }
