@@ -41,7 +41,11 @@ function showMessage(title, content) {
 }
 
 function generateWindow() {
-    $('<div></div>', {id:'unread'}).appendTo("body").window({
+    var msgWin = $('<div/>', {id:"msgWin"});
+    var list = $('<div/>');
+    list.appendTo(msgWin);
+
+    msgWin.appendTo("body").window({
         width:300,
         height:200,
         title:"未读消息",
@@ -52,19 +56,31 @@ function generateWindow() {
         minimizable:false,
         maximizable:false,
         shadow:false,
-        content: createList(),
+        href:"getUnreadMessages",
+        extractor: function (data) {
+            if (data == "[]") {
+                return "no unread messages"
+            } else {
+                return generateList(data);
+            }
+        },
         tools: [
+            {
+                iconCls:'icon-undo',
+                handler: function () {
+                    msgWin.window('refresh');
+                }
+            },
             {
                 iconCls:'icon-more',
                 handler: function () {
-                    
-                }
 
+                }
             }
         ],
     });
 
-    $("#unread").window('window').css({
+    msgWin.window('window').css({
         left: '',
         top: '',
         right: 0,
@@ -72,15 +88,23 @@ function generateWindow() {
     });
 }
 
-function createList() {
-    var div = $('<div></div>').appendTo("#unread");
-    div.datalist({
-        url: "getUnreadMessages",
-        lines: true,
-        checkbox: false,
-        fit: true,
-        valueField: 'title',
-        textField: 'title',
+function generateList(data) {
+    var result = $("<ul/>");
+    JSON.parse(data).forEach(function (obj) {
+        var li = $("<li/>");
+        li.text(obj.title).click(function() {
+            showContent(obj)
+        });
+        result.append(li);
     });
-    return div.html();
+
+    return result;
+}
+
+function showContent(obj) {
+    $("#msgWin").window('body').html(obj.content);
+    //after reading, we delete this message form unread list
+    $.post("removeUnreadMessage", {messageId: obj.id}, function () {
+       console.log("message deleted")
+    });
 }
