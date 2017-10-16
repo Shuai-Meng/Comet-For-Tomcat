@@ -6,29 +6,22 @@
 <html>
 <head>
     <title>comet</title>
-    <script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery.min.js"></script>
+    <script src="<%= request.getContextPath()%>/js/jquery.min.js"></script>
+    <script src="<%= request.getContextPath()%>/js/jquery.easyui.min.js"></script>
+    <script src="<%= request.getContextPath()%>/js/comet.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/default/validatebox.css">
+    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/js/themes/icon.css">
 </head>
 <body>
 	<input type="text" id="send">
 	<button id='co'>提交</button>
 <script>
-	var root="<%=request.getContextPath()%>";
 	$(function() {
-		comet();
-		$("#co").click(send);
+		$("#co").click(function () {
+            console.log("clicked");
+        });
 	});
-	
-	function comet() {
-		$.get(root+"/test", function(data) {
-		    if (data != "exists") {
-                comet();
-            }
-		});
-	}
-	
-	function send() {
-		$.post(root+"/manage/addMessage", {'msg':$('#send').val()});
-	}
 </script>
 </body>
 </html>

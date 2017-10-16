@@ -1,27 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
-       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:task="http://www.springframework.org/schema/task"
-       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-	 http://www.springframework.org/schema/tx
-	 http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-	 http://www.springframework.org/schema/jee
-	 http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
-	 http://www.springframework.org/schema/aop
-	 http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	 http://www.springframework.org/schema/context
 	 http://www.springframework.org/schema/context/spring-context-3.0.xsd
 	 http://www.springframework.org/schema/task
-	 http://www.springframework.org/schema/task/spring-task-3.0.xsd
-	 http://www.springframework.org/schema/util
-	 http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	 http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
     <context:component-scan base-package="manage,comet"/>
     <bean class="utils.SpringUtil"/>
     <bean class="comet.ThreadStarter"/>
     <task:annotation-driven />
+
+    <!-- 引入配置文件 -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:properties/*.properties" />
+    </bean>
+
+    <!-- 配置 JedisPoolConfig 实例 -->
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="${redis.maxIdle}"/>
+        <property name="maxTotal" value="${redis.maxActive}"/>
+        <property name="maxWaitMillis" value="${redis.maxWait}"/>
+        <property name="testOnBorrow" value="${redis.testOnBorrow}"/>
+    </bean>
+
+    <!-- 配置JedisConnectionFactory -->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="${redis.host}"/>
+        <property name="port" value="${redis.port}"/>
+        <property name="password" value="${redis.pass}"/>
+        <property name="database" value="${redis.dbIndex}"/>
+        <property name="poolConfig" ref="poolConfig"/>
+    </bean>
+
+    <!-- 配置RedisTemplate -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+        <property name="keySerializer" >
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="valueSerializer" >
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+    </bean>
+
+    <!-- 配置RedisCacheManager -->
+    <bean id="redisCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+        <constructor-arg name="redisOperations" ref="redisTemplate"/>
+        <property name="defaultExpiration" value="${redis.expiration}"/>
+    </bean>
+
+    <bean id="redisUtil" class="utils.RedisUtil" >
+        <property name="redisTemplate" ref="redisTemplate" />
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="initialSize" value="${initialSize}"></property>
+        <property name="maxActive" value="${maxActive}"></property>
+        <property name="maxIdle" value="${maxIdle}"></property>
+        <property name="minIdle" value="${minIdle}"></property>
+        <property name="maxWait" value="${maxWait}"></property>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:myBatis/*Mapper.xml"></property>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="manage.mapper" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 </beans>
