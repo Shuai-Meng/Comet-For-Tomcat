@@ -1,5 +1,6 @@
 package manage.service.impl;
 
+import comet.Constants;
 import comet.MessageQueue;
 import manage.mapper.*;
 import manage.service.ManageService;
@@ -9,6 +10,7 @@ import manage.vo.MyUser;
 import manage.vo.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import utils.RedisUtil;
 import utils.SpringSecurityUtil;
 
 import java.util.*;
@@ -83,7 +85,8 @@ public class ManageServiceImpl implements ManageService{
 
         if("1".equals(message.getImmediate())) {
             message.setSendTime(new Date());
-            MessageQueue.getSingleInstance().addMessage(message);
+//            MessageQueue.getSingleInstance().addMessage(message);
+            RedisUtil.lpush(Constants.SENDING_LIST, message);//TODO no id
         }
 
         messageMapper.insertMessage(message);

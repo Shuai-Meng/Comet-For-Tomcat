@@ -7,6 +7,8 @@ import java.util.*;
  * Created by m on 17-5-10.
  */
 public class Message implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     private int    id;
     private int    type;
     private String title;

@@ -5,6 +5,7 @@ import manage.mapper.MessageMapper;
 import manage.mapper.UnreadListMapper;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
+import utils.RedisUtil;
 import utils.SpringUtil;
 
 import java.io.PrintWriter;
@@ -14,10 +15,8 @@ public class MessageQueue implements Runnable {
     private static MessageQueue onlyInstance = new MessageQueue();
     private MessageMapper messageMapper;
     private UnreadListMapper unreadListMapper;
-    private List<Message> messageList;
 
     private MessageQueue() {
-        messageList = new ArrayList<Message>();
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
         unreadListMapper = (UnreadListMapper) SpringUtil.getBean("unreadListMapper");
     }
@@ -26,18 +25,11 @@ public class MessageQueue implements Runnable {
         return onlyInstance;
     }
 
-    public synchronized void addMessage(Message message) {
-        //TODO redis
-        if(messageList.size() >= 100)
-            sendMessage();
-
-        messageList.add(message);
-        notifyAll();
-    }
-
     //TODO multi thread for efficiency
-    private void sendMessage() {
-        for(Message message : messageList) {
+    //TODO 通信机制有点复杂 多个即时消息发送同一用户，链接已断开；一个链接只能发送一条消息
+    private void sendMessage(List<Object> messageList) {
+        for (Object object : messageList) {
+            Message message = (Message)object;
             for(int userId : getUserIdOfType(message.getType())) {
                 CometEvent event = ConnectionManager.getContainer().get(userId);
 
@@ -48,7 +40,6 @@ public class MessageQueue implements Runnable {
                 }
             }
         }
-        messageList.clear();
     }
 
     private void storeUnreadMessage(int userId, int messageId) {
@@ -77,14 +68,19 @@ public class MessageQueue implements Runnable {
     public void run() {
         while(true) {
             synchronized (this) {
+                List<Object> messageList = RedisUtil.lrange(Constants.SENDING_LIST, 0,
+                        Constants.LIST_VOLUME);
                 if(messageList.size() == 0) {
                     try {
                         wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                } else
-                    sendMessage();
+                } else {
+                    sendMessage(messageList);
+                }
+
+                RedisUtil.ltrim(Constants.SENDING_LIST, Constants.LIST_VOLUME, -1);
             }
         }
     }

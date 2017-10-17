@@ -17,9 +17,13 @@
     <task:annotation-driven />
 
     <!-- 引入配置文件 -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:properties/*.properties" />
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:properties/db.properties</value>
+                <value>classpath:properties/redis.properties</value>
+            </list>
+        </property>
     </bean>
 
     <!-- 配置 JedisPoolConfig 实例 -->
@@ -47,6 +51,12 @@
         </property>
         <property name="valueSerializer" >
             <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+        <property name="hashKeySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+        <property name="hashValueSerializer">
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
         </property>
     </bean>
 
