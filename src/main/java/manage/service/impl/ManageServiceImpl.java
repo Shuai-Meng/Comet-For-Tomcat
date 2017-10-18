@@ -82,14 +82,13 @@ public class ManageServiceImpl implements ManageService{
     public void addMessage(Message message) {
         SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
         message.setPublisher(securityUser.getUsername());
+        messageMapper.insertMessage(message);
 
         if("1".equals(message.getImmediate())) {
             message.setSendTime(new Date());
-//            MessageQueue.getSingleInstance().addMessage(message);
-            RedisUtil.lpush(Constants.SENDING_LIST, message);//TODO no id
+            RedisUtil.lpush(Constants.SENDING_LIST, message);
         }
 
-        messageMapper.insertMessage(message);
     }
 
     public Map<String, Object> getSubscribeType(String key) {

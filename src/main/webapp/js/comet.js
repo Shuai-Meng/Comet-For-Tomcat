@@ -8,13 +8,17 @@ $(function() {
 });
 
 function comet() {
-    console.log(new Date());
+    console.log("start linking-" + new Date());
     $.ajax({
         type: 'get',
         url: "/comet/test",
         dataType: 'json',
         success: function (data) {
-            showMessage(data.title, data.content);
+            console.log("message received-" + new Date());
+            var len = data.length;
+            while (len--) {
+                showMessage(data[len].title, data[len].content);
+            }
             comet();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {

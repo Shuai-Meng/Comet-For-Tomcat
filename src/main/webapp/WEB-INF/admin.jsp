@@ -354,7 +354,7 @@
                     type: 'post',
                     data: $div.find('form').serialize(),
                     success: function() {
-
+                        console.log("message sent-" + new Date());
                     },
                     error: function() {
 

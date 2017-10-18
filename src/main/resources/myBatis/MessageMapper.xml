@@ -74,7 +74,7 @@
         select * from message WHERE send_time = #{date} and IMMEDIATE = '0'
     </select>
 
-    <insert id="insertMessage" parameterType="manage.vo.Message">
+    <insert id="insertMessage" parameterType="manage.vo.Message" useGeneratedKeys="true" keyProperty="id">
         insert into message(title, content, type, immediate, publisher, send_time) values
           (#{title}, #{content}, ${type}, #{immediate}, #{publisher}, #{sendTime})
     </insert>
