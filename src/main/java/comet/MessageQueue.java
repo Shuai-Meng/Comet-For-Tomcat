@@ -15,6 +15,7 @@ public class MessageQueue implements Runnable {
     private static MessageQueue onlyInstance = new MessageQueue();
     private MessageMapper messageMapper;
     private UnreadListMapper unreadListMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private MessageQueue() {
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
@@ -25,35 +26,51 @@ public class MessageQueue implements Runnable {
         return onlyInstance;
     }
 
-    //TODO multi thread for efficiency
-    //TODO 通信机制有点复杂 多个即时消息发送同一用户，链接已断开；一个链接只能发送一条消息
-    private void sendMessage(List<Object> messageList) {
+    private Map<Integer, List<Message>> dispatchMessage(List<Object> messageList) {
+        Map<Integer, List<Message>> map = new HashMap<Integer, List<Message>>();
+
         for (Object object : messageList) {
             Message message = (Message)object;
-            for(int userId : getUserIdOfType(message.getType())) {
-                CometEvent event = ConnectionManager.getContainer().get(userId);
 
-                if (event != null) {
-                    doSend(event, message);
-                } else {//means the user is offline
-                    storeUnreadMessage(userId, message.getId());
+            for(int userId : getUserIdOfType(message.getType())) {
+                List<Message> tmp = map.get(userId);
+
+                if (tmp == null) {
+                    tmp = new ArrayList<Message>();
+                    map.put(userId, tmp);
                 }
+
+                tmp.add(message);
+            }
+        }
+
+        return map;
+    }
+
+    private void storeUnreadMessage(int userId, List<Message> list) {
+        for (Message message : list) {
+            Map<String, Integer> map = new HashMap<String, Integer>();
+            map.put("userId", userId);
+            map.put("messageId", message.getId());
+            unreadListMapper.insert(map);
+        }
+    }
+
+    private void sendMessage(Map<Integer, List<Message>> map) {
+        for (int userId : map.keySet()) {
+            CometEvent cometEvent = ConnectionManager.getContainer().get(userId);
+            if (cometEvent == null) {
+                storeUnreadMessage(userId, map.get(userId));
+            } else {
+                doSend(cometEvent, map.get(userId));
             }
         }
     }
 
-    private void storeUnreadMessage(int userId, int messageId) {
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("userId", userId);
-        map.put("messageId", messageId);
-        unreadListMapper.insert(map);
-    }
-
-    private void doSend(CometEvent event, Message message) {
+    private void doSend(CometEvent event, List<Message> list) {
         try {
             PrintWriter writer = event.getHttpServletResponse().getWriter();
-            ObjectMapper objectMapper = new ObjectMapper();
-            writer.println(objectMapper.writeValueAsString(message));
+            writer.println(objectMapper.writeValueAsString(list));
             writer.flush();
             writer.close();
         } catch (Exception e) {
@@ -77,10 +94,10 @@ public class MessageQueue implements Runnable {
                         e.printStackTrace();
                     }
                 } else {
-                    sendMessage(messageList);
+                    Map<Integer, List<Message>> map = dispatchMessage(messageList);
+                    sendMessage(map);
+                    RedisUtil.ltrim(Constants.SENDING_LIST, Constants.LIST_VOLUME, -1);
                 }
-
-                RedisUtil.ltrim(Constants.SENDING_LIST, Constants.LIST_VOLUME, -1);
             }
         }
     }
