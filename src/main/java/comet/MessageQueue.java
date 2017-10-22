@@ -16,6 +16,7 @@ public class MessageQueue implements Runnable {
     private MessageMapper messageMapper;
     private UnreadListMapper unreadListMapper;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private Map<Integer, List<CometEvent>> cometContainer = ConnectionManager.getContainer();
 
     private MessageQueue() {
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
@@ -58,21 +59,23 @@ public class MessageQueue implements Runnable {
 
     private void sendMessage(Map<Integer, List<Message>> map) {
         for (int userId : map.keySet()) {
-            CometEvent cometEvent = ConnectionManager.getContainer().get(userId);
-            if (cometEvent == null) {
+            List<CometEvent> list = cometContainer.get(userId);
+            if (list == null || list.isEmpty()) {
                 storeUnreadMessage(userId, map.get(userId));
             } else {
-                doSend(cometEvent, map.get(userId));
+                doSend(list, map.get(userId));
             }
         }
     }
 
-    private void doSend(CometEvent event, List<Message> list) {
+    private void doSend(List<CometEvent> eventList, List<Message> list) {
         try {
-            PrintWriter writer = event.getHttpServletResponse().getWriter();
-            writer.println(objectMapper.writeValueAsString(list));
-            writer.flush();
-            writer.close();
+            for (CometEvent event : eventList) {
+                PrintWriter writer = event.getHttpServletResponse().getWriter();
+                writer.println(objectMapper.writeValueAsString(list));
+                writer.flush();
+                writer.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

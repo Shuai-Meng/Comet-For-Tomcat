@@ -24,7 +24,6 @@ public class DelayedMessageHandler {
     @Scheduled(cron = "0 * * * * ?")
     public void pushMessageToQueue() throws InterruptedException {
         for (Message message : getMessageFromDataBase(new Date())) {
-//            MessageQueue.getSingleInstance().addMessage(message);
             RedisUtil.lpush(Constants.SENDING_LIST, message);
         }
     }
