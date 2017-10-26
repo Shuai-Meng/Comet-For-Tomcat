@@ -21,9 +21,6 @@
         <if test = "name != null">
             AND name = like concat(concat('%',#{name}),'%')
         </if>
-        <if test = "whetherApplying != null">
-            AND whetherApplying = #{whetherApplying}
-        </if>
     </select>
 
     <select id="selectUserByName" parameterType="string" resultType="manage.vo.MyUser">
@@ -42,16 +39,10 @@
         <if test = "name != null and name !='' ">
             AND name like concat(concat('%',#{name}),'%')
         </if>
-        <if test = "whetherApplying != null">
-            AND whetherApplying = #{whetherApplying}
-        </if>
     </select>
 
     <update id="update" parameterType="manage.vo.MyUser">
         update user set role = #{role}
-        <if test="whetherApplying != null">
-            , whetherApplying = #{whetherApplying}
-        </if>
         where id = #{id}
     </update>
 

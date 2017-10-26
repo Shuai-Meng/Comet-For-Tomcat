@@ -5,6 +5,7 @@ import manage.vo.Message;
 import manage.vo.MessageType;
 import manage.vo.MyUser;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -67,17 +68,24 @@ public class ManageController {
         return manageService.getSubscribeType(key);
     }
 
-    @RequestMapping(value = "/subscribe")
+    @RequestMapping(value = "/modifySubscribe")
+    @ResponseBody
     public void subscribe(HttpServletRequest httpServletRequest) {
-        String typeId = httpServletRequest.getParameter("typeId");
+        String typeId = httpServletRequest.getParameter("id");
         String operation = httpServletRequest.getParameter("operation");
         manageService.subscribe(typeId, operation);
     }
 
     @RequestMapping(value = "/getMessageTypes")
     @ResponseBody
-    public List<MessageType> getMessageTypes(HttpServletRequest httpServletRequest) {
+    public List<MessageType> getMessageTypes() {
         return manageService.getMessageTypes();
+    }
+
+    @RequestMapping(value = "/addType")
+    @ResponseBody
+    public void addType(MessageType messageType) {
+        manageService.addMessageType(messageType);
     }
 
     @RequestMapping(value = "/modifyType")
@@ -100,6 +108,13 @@ public class ManageController {
     @ResponseBody
     public void addMessage(Message message) {
         manageService.addMessage(message);
+    }
+
+    @RequestMapping(value = "/modifyMessage")
+    @ResponseBody
+    public void modifyMessage(Message message, HttpServletRequest httpServletRequest) {
+        String operation = httpServletRequest.getParameter("operation");
+        manageService.modifyMessage(message, operation);
     }
 
     @RequestMapping(value = "/getUnreadMessages")

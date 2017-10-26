@@ -33,8 +33,6 @@ public class ManageServiceImpl implements ManageService{
 
         if("all".equals(role))
             myUser.setRole(null);
-        else if("ROLE_SUB".equals(role))
-            myUser.setWhetherApplying("1");
         else if("".equals(key))
             myUser.setName(null);
 
@@ -58,7 +56,7 @@ public class ManageServiceImpl implements ManageService{
     public void modifyType(String id, String name, String operation) {
         if("delete".equals(operation))
             messageMapper.deleteType(Integer.valueOf(id));
-        else if("modify".equals(operation)) {
+        else if("update".equals(operation)) {
             MessageType messageType = new MessageType();
             messageType.setId(Integer.valueOf(id));
             messageType.setName(name);
@@ -79,8 +77,7 @@ public class ManageServiceImpl implements ManageService{
     }
 
     public void addMessage(Message message) {
-        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
-        message.setPublisher(securityUser.getUsername());
+        message.setPublisher(getUser().getUsername());
         messageMapper.insertMessage(message);
 
         if("1".equals(message.getImmediate())) {
@@ -93,8 +90,7 @@ public class ManageServiceImpl implements ManageService{
     public Map<String, Object> getSubscribeType(String key) {
         MessageType messageType = new MessageType();
         messageType.setName(key);
-        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
-        messageType.setId(securityUser.getUserId());
+        messageType.setId(getUser().getUserId());
 
         Map<String,Object> res = new HashMap<String,Object>();
         res.put("rows", messageMapper.getSubscribeType(messageType));
@@ -103,28 +99,38 @@ public class ManageServiceImpl implements ManageService{
     }
 
     public void subscribe(String typeId, String operation) {
-        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("typeId", Integer.valueOf(typeId));
-        map.put("userId", securityUser.getUserId());
+        map.put("userId", getUser().getUserId());
 
-        if(operation.equals("sub"))
+        if(operation.equals("sub"))//TODO
             userMapper.subsribe(map);
         else
             userMapper.deSubsribe(map);
     }
 
     public List<Message> getUnreadMessages() {
-        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
-        return unreadListMapper.getUnreadList(securityUser.getUserId());
+        return unreadListMapper.getUnreadList(getUser().getUserId());
     }
 
     public void deleteUnreandMessage(int messageId) {
-        SecurityUser securityUser = SpringSecurityUtil.getCurrentUser();
         Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("userId", securityUser.getUserId());
+        map.put("userId", getUser().getUserId());
         map.put("messageId", messageId);
         unreadListMapper.delete(map);
+    }
+
+    public void modifyMessage(Message message, String operation) {
+        if ("delete".equals(operation)) {
+            messageMapper.deleteMessage(message);
+        } else {
+            message.setPublisher(getUser().getUsername());
+            messageMapper.updateMessage(message);
+        }
+    }
+
+    public void addMessageType(MessageType messageType) {
+        messageMapper.insertType(messageType.getName());
     }
 
     public Map<String, Object> getMessage(String key) {
@@ -132,5 +138,9 @@ public class ManageServiceImpl implements ManageService{
         res.put("total", messageMapper.getCount(key));
         res.put("rows", messageMapper.getRows(key));
         return res;
+    }
+
+    private SecurityUser getUser() {
+        return SpringSecurityUtil.getCurrentUser();
     }
 }

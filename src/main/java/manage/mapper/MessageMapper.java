@@ -31,4 +31,6 @@ public interface MessageMapper {
     List<Integer> getUserIdOfType(@Param("typeId")int type);
 
     List<Message> getMessagesOfThisMin(Date date);
+
+    void deleteMessage(Message message);
 }

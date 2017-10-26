@@ -32,4 +32,8 @@ public interface ManageService {
     List<Message> getUnreadMessages();
 
     void deleteUnreandMessage(int messageId);
+
+    void modifyMessage(Message message, String operation);
+
+    void addMessageType(MessageType messageType);
 }

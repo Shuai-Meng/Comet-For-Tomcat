@@ -56,6 +56,15 @@
     </select>
 
     <!-- msg -->
+    <resultMap id="messageMap" type="manage.vo.Message">
+        <id property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="publisher" column="publisher"/>
+        <result property="sendTime" column="send_time"/>
+    </resultMap>
+
     <select id="getCount" parameterType="string" resultType="int">
         select count(1) from message where 1 = 1
         <if test="name != null">
@@ -63,14 +72,14 @@
         </if>
     </select>
 
-    <select id="getRows" parameterType="string" resultType="manage.vo.Message">
+    <select id="getRows" parameterType="string" resultMap="messageMap">
         select * from message where 1 =1
         <if test="name != null">
             and title like concat(concat('%',#{name}),'%')
         </if>
     </select>
 
-    <select id="getMessagesOfThisMin" parameterType="java.util.Date" resultType="manage.vo.Message">
+    <select id="getMessagesOfThisMin" parameterType="java.util.Date" resultMap="messageMap">
         select * from message WHERE send_time = #{date} and IMMEDIATE = '0'
     </select>
 
@@ -84,6 +93,13 @@
     </delete>
 
     <update id="updateMessage" parameterType="manage.vo.Message">
-        update message set name = #{name} where id = #{id}
+        update message set
+          title = #{title},
+          type = #{type},
+          send_time = #{sendTime},
+          immediate = #{immediate},
+          content = #{content},
+          publisher = #{publisher}
+        where id = #{id}
     </update>
 </mapper>
