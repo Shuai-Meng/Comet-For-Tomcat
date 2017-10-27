@@ -1,5 +1,6 @@
 package manage.controller;
 
+import com.mysql.jdbc.MysqlIO;
 import manage.service.ManageService;
 import manage.vo.Message;
 import manage.vo.MessageType;
@@ -32,12 +33,13 @@ public class ManageController {
         return modelAndView;
     }
 
+    /**----  Auth ----*/
     @RequestMapping(value = "/getUsers")
     @ResponseBody
-    public Map<String,Object> getUsers(HttpServletRequest httpServletRequest) {
-        String key = httpServletRequest.getParameter("key");
-        String role = httpServletRequest.getParameter("role");
-        return manageService.getUsers(key, role);
+    public Map<String,Object> getUsers(HttpServletRequest httpServletRequest, MyUser myUser) {
+        String page = httpServletRequest.getParameter("page");
+        String rows = httpServletRequest.getParameter("rows");
+        return manageService.getUsers(page, rows, myUser);
     }
 
     @RequestMapping(value = "/getUser")
@@ -54,20 +56,7 @@ public class ManageController {
         manageService.modifyAuth(myUser);
     }
 
-    @RequestMapping(value = "/getMessageType")
-    @ResponseBody
-    public Map<String,Object> getMessageType(HttpServletRequest httpServletRequest) {
-        String key = httpServletRequest.getParameter("key");
-        return manageService.getMessageType(key);
-    }
-
-    @RequestMapping(value = "/getSubscribeType")
-    @ResponseBody
-    public Map<String,Object> getSubscribeType(HttpServletRequest httpServletRequest) {
-        String key = httpServletRequest.getParameter("key");
-        return manageService.getSubscribeType(key);
-    }
-
+    /**----  Subscribe ----*/
     @RequestMapping(value = "/modifySubscribe")
     @ResponseBody
     public void subscribe(HttpServletRequest httpServletRequest) {
@@ -76,10 +65,29 @@ public class ManageController {
         manageService.subscribe(typeId, operation);
     }
 
+    @RequestMapping(value = "/getSubscribeType")
+    @ResponseBody
+    public Map<String,Object> getSubscribeType(HttpServletRequest httpServletRequest) {
+        String key = httpServletRequest.getParameter("name");
+        String page = httpServletRequest.getParameter("page");
+        String rows = httpServletRequest.getParameter("rows");
+        return manageService.getSubscribeType(page, rows, key);
+    }
+
+    /**----  Type ----*/
     @RequestMapping(value = "/getMessageTypes")
     @ResponseBody
     public List<MessageType> getMessageTypes() {
         return manageService.getMessageTypes();
+    }
+
+    @RequestMapping(value = "/getMessageType")
+    @ResponseBody
+    public Map<String,Object> getMessageType(HttpServletRequest httpServletRequest) {
+        String key = httpServletRequest.getParameter("name");
+        String page = httpServletRequest.getParameter("page");
+        String rows = httpServletRequest.getParameter("rows");
+        return manageService.getMessageType(key, page, rows);
     }
 
     @RequestMapping(value = "/addType")
@@ -97,11 +105,14 @@ public class ManageController {
         manageService.modifyType(id, name, operation);
     }
 
+    /**----  Message ----*/
     @RequestMapping(value = "/getMessage")
     @ResponseBody
     public Map<String,Object> getMessage(HttpServletRequest httpServletRequest) {
-        String key = httpServletRequest.getParameter("key");
-        return manageService.getMessage(key);
+        String key = httpServletRequest.getParameter("name");
+        String page = httpServletRequest.getParameter("page");
+        String rows = httpServletRequest.getParameter("rows");
+        return manageService.getMessage(key, page, rows);
     }
 
     @RequestMapping(value = "/addMessage")

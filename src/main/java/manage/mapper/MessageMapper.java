@@ -1,36 +1,31 @@
 package manage.mapper;
 
-import manage.vo.Message;
-import manage.vo.MessageType;
+import manage.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by m on 17-5-21.
  */
 @Repository
 public interface MessageMapper {
-    List<MessageType> getTypeRows(String name);
+    List<MessageType> getTypeRows(Map<String, Object> map);
     int getTypeCount(@Param("name")String name);
 
-    List<MessageType> getSubscribeType(MessageType messageType);
+    List<MessageType> getSubscribeType(Map<String, Object> map);
     Integer getSubscribeTypeCount(@Param("name") String name);
-
-    void deleteType(int id);
+    void deleteType(@Param("id")int id);
     void updateType(MessageType messageType);
-    void insertType(String name);
+    void insertType(@Param("name")String name);
+    List<MessageType> getAllTypes();
 
-    List<Message> getRows(String name);
-    int getCount(String name);
+    List<Message> getRows(Map<String, Object> param);
+    int getCount(@Param("name")String name);
     void updateMessage(Message message);
     void insertMessage(Message message);
-
-    List<Integer> getUserIdOfType(@Param("typeId")int type);
-
+    void deleteMessage(Message message);
     List<Message> getMessagesOfThisMin(Date date);
 
-    void deleteMessage(Message message);
+    List<Integer> getUserIdOfType(@Param("typeId")int type);
 }

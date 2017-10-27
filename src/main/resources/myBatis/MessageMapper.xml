@@ -15,6 +15,11 @@
         <if test="name != null">
             and name like concat(concat('%',#{name}),'%')
         </if>
+        limit #{offset}, #{size}
+    </select>
+
+    <select id="getAllTypes" resultType="manage.vo.MessageType">
+        select * from message_type
     </select>
 
     <insert id="insertType" parameterType="string">
@@ -29,7 +34,7 @@
         update message_type set name = #{name} where id = #{id}
     </update>
 
-    <select id="getSubscribeType" parameterType="manage.vo.MessageType" resultType="manage.vo.MessageType">
+    <select id="getSubscribeType" parameterType="java.util.Map" resultType="manage.vo.MessageType">
         select *, if(
           exists(
             select user_id from subscribe_list
@@ -39,8 +44,9 @@
         from message_type
         where 1 =1
         <if test="name != null">
-            and message_type.name like concat(concat('%',#{name}),'%');
+            and message_type.name like concat(concat('%',#{name}),'%')
         </if>
+        limit #{offset}, #{size}
     </select>
 
     <select id="getSubscribeTypeCount" resultType="int">
@@ -68,15 +74,16 @@
     <select id="getCount" parameterType="string" resultType="int">
         select count(1) from message where 1 = 1
         <if test="name != null">
-            and like concat(concat('%',#{name}),'%')
+            and title like concat(concat('%',#{name}),'%')
         </if>
     </select>
 
-    <select id="getRows" parameterType="string" resultMap="messageMap">
+    <select id="getRows" parameterType="java.util.Map" resultMap="messageMap">
         select * from message where 1 =1
         <if test="name != null">
             and title like concat(concat('%',#{name}),'%')
         </if>
+        limit #{offset}, #{size}
     </select>
 
     <select id="getMessagesOfThisMin" parameterType="java.util.Date" resultMap="messageMap">

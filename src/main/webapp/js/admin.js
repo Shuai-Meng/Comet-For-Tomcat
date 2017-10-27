@@ -57,9 +57,7 @@
 
     function generateSearchBar($div, id) {
         var $menu = null;
-        if (id == "auth") {
-            $menu = '#roleMenu';
-        }
+        if (id == "auth") $menu = '#roleMenu';
 
         var json = {};
         $div.find('input').searchbox({
@@ -67,11 +65,10 @@
             prompt:'请输入关键字',
             menu: $menu,
             searcher: function(key, value) {
-                json['key'] = key;
-                if(id == "auth")
-                    json['role'] = value;
+                json['name'] = key;
+                if(id == "auth") json['role'] = value;
 
-                $div.find('table').datagrid('load', json);
+                $div.find('table.datagrid-f').datagrid('load', json);
             },
         });
 
@@ -91,21 +88,9 @@
             url: url,
             queryParams: json,
             columns:[column],
-            pageSize:15,
-            pageList:[15,20,30],
             toolbar: generateTableTools($table, id),
             onDblClickRow: function(index, row) {
-                if(id == "message") {
-                    $.messager.show({
-                        width:300,
-                        height:200,
-                        title:row.title,
-                        msg:row.content,
-                        resizable:true,
-                        timeout:0,
-                        // showType:'slide'
-                    });
-                }
+                showMsgContent(id, row);
             },
             onClickRow: function (index, row) {
                 if (obj.editing == true) {
@@ -132,7 +117,8 @@
                 row.editing = false;
                 obj.editing = false;
                 manageToolVisual(id, row);
-                $table.datagrid('refreshRow', index);
+                row.id == '-1' ? $table.datagrid('deleteRow', index)
+                    : $table.datagrid('refreshRow', index);
             }
         });
     }
@@ -159,7 +145,7 @@
                 id == 'message' ? editMessage({'id':'New'}, 'add') : editType($table, 'add');
             }));
             tools.push(generateToolElement('删除', 'icon-remove', function(){
-                commonToolHandler(id, 'delete', $table);
+                deleteHandler(id, 'delete', $table);
             }));
             tools.push(generateToolElement('修改', 'icon-edit', function () {
                 var row = $table.datagrid('getSelected');
@@ -173,14 +159,30 @@
 
         if (id == "type") {
             tools.push(generateToolElement('保存', 'icon-save', function(){
-                commonToolHandler(id, "save", $table);
+                var row = $table.datagrid('getSelected');
+                var index = $table.datagrid('getRowIndex', row);
+                $table.datagrid('endEdit', index);
+                if (row.id == '-1') {
+                    commonAjax(obj.contextPath + '/addType', {'name':row.name});
+                    $table.datagrid('load', {});
+                }
             }));
             tools.push(generateToolElement('取消', 'icon-cancel', function(){
-                commonToolHandler(id, "cancel", $table);
+                var row = $table.datagrid('getSelected');
+                var index = $table.datagrid('getRowIndex', row);
+                $table.datagrid('cancelEdit', index);
             }));
         }
 
         return tools;
+    }
+
+    function deleteHandler(id, operation, $table) {
+        $.messager.confirm('alert', 'are you sure to delete?', function (r) {
+            if (r) {
+                commonToolHandler(id, operation, $table);
+            }
+        })
     }
 
     function generateToolElement(name, icon, handler) {
@@ -195,24 +197,6 @@
         var row = $table.datagrid('getSelected');
         if(row == null) {
             $.messager.alert('alert', "please select a row first");
-            return;
-        }
-        var index = $table.datagrid('getRowIndex', row);
-
-        if (operation == "delete") {//TODO
-            $.messager.confirm('alert', "Are you sure to delete?")
-        } else if (operation == "save") {
-            $table.datagrid('endEdit', index);
-            if (row.id == '-1') {
-                commonAjax(obj.contextPath + '/addType', {'name':row.name});
-                $table.datagrid('load', {});
-                return;
-            }
-        } else if (operation == "cancel") {
-            $table.datagrid('cancelEdit', index);
-            if (row.id == '-1') {
-                $table.datagrid('deleteRow', index);
-            }
             return;
         }
 
@@ -301,6 +285,24 @@
         }
         var index = $table.datagrid('getRowIndex', row);
         $table.datagrid('beginEdit', index);
+    }
+
+    function showMsgContent(id, row) {
+        if(id == "message") {
+            $.messager.show({
+                width:300,
+                height:200,
+                title:row.title,
+                msg:row.content,
+                resizable:true,
+                timeout:0,
+                showType:'show',
+                style: {
+                    right:'',
+                    bottom:''
+                }
+            });
+        }
     }
 
     function editMessage(row, operation) {

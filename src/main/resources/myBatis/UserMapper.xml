@@ -13,14 +13,15 @@
         and subscribe_list.type_id = #{typeId}
     </select>
 
-    <select id="selectUserByRoleOrName" resultType="manage.vo.MyUser" parameterType="manage.vo.MyUser">
+    <select id="selectUserByRoleOrName" resultType="java.util.Map" parameterType="manage.vo.MyUser">
         select * from user where 1 = 1
         <if test = "role != null">
          AND role = #{role}
         </if>
         <if test = "name != null">
-            AND name = like concat(concat('%',#{name}),'%')
+            AND name like concat(concat('%',#{name}),'%')
         </if>
+        limit #{offset}, #{size}
     </select>
 
     <select id="selectUserByName" parameterType="string" resultType="manage.vo.MyUser">

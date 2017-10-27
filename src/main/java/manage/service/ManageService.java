@@ -11,13 +11,9 @@ import java.util.*;
 public interface ManageService {
     void modifyAuth(MyUser myUser);
 
-    Map<String,Object> getUsers(String key, String role);
+    Map<String,Object> getUsers(String page, String rows, MyUser myUser);
 
     void modifyType(String id, String name, String operation);
-
-    Map<String,Object> getMessageType(String key);
-
-    Map<String,Object> getMessage(String key);
 
     List<MyUser> getUsers(String key, int typeId);
 
@@ -25,7 +21,7 @@ public interface ManageService {
 
     void addMessage(Message message);
 
-    Map<String,Object> getSubscribeType(String key);
+    Map<String,Object> getSubscribeType(String page, String rows, String key);
 
     void subscribe(String typeId, String operation);
 
@@ -36,4 +32,8 @@ public interface ManageService {
     void modifyMessage(Message message, String operation);
 
     void addMessageType(MessageType messageType);
+
+    Map<String,Object> getMessage(String key, String page, String rows);
+
+    Map<String,Object> getMessageType(String key, String page, String rows);
 }

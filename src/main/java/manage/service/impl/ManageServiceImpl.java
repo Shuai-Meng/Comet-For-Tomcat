@@ -26,19 +26,19 @@ public class ManageServiceImpl implements ManageService{
     @Autowired
     private UnreadListMapper unreadListMapper;
 
-    public Map<String,Object> getUsers(String key, String role) {
-        MyUser myUser = new MyUser();
-        myUser.setRole(role);
-        myUser.setName(key);
-
-        if("all".equals(role))
+    public Map<String,Object> getUsers(String page, String rows, MyUser myUser) {
+        if("all".equals(myUser.getRole()))
             myUser.setRole(null);
-        else if("".equals(key))
+        else if("".equals(myUser.getName()))
             myUser.setName(null);
 
-        Map<String,Object> res = new HashMap<String,Object>();
+        Map<String, Object> param = getPagination(page, rows);
+        param.put("name", myUser.getName());
+        param.put("role", myUser.getRole());
+
+        Map<String, Object> res = new HashMap<String,Object>();
         res.put("total", userMapper.getCount(myUser));
-        res.put("rows", userMapper.selectUserByRoleOrName(myUser));
+        res.put("rows", userMapper.selectUserByRoleOrName(param));
         return res;
     }
 
@@ -65,15 +65,18 @@ public class ManageServiceImpl implements ManageService{
             messageMapper.insertType(name);
     }
 
-    public Map<String, Object> getMessageType(String key) {
+    public Map<String, Object> getMessageType(String key, String page, String rows) {
         Map<String,Object> res = new HashMap<String,Object>();
+
+        Map<String, Object> param = getPagination(page, rows);
+        param.put("name", key);
         res.put("total", messageMapper.getTypeCount(key));
-        res.put("rows", messageMapper.getTypeRows(key));
+        res.put("rows", messageMapper.getTypeRows(param));
         return res;
     }
 
     public List<MessageType> getMessageTypes() {
-        return messageMapper.getTypeRows(null);
+        return messageMapper.getAllTypes();
     }
 
     public void addMessage(Message message) {
@@ -84,16 +87,15 @@ public class ManageServiceImpl implements ManageService{
             message.setSendTime(new Date());
             RedisUtil.lpush(Constants.SENDING_LIST, message);
         }
-
     }
 
-    public Map<String, Object> getSubscribeType(String key) {
-        MessageType messageType = new MessageType();
-        messageType.setName(key);
-        messageType.setId(getUser().getUserId());
+    public Map<String, Object> getSubscribeType(String page, String rows, String key) {
+        Map<String, Object> param = getPagination(page, rows);
+        param.put("name", key);
+        param.put("id", getUser().getUserId());
 
         Map<String,Object> res = new HashMap<String,Object>();
-        res.put("rows", messageMapper.getSubscribeType(messageType));
+        res.put("rows", messageMapper.getSubscribeType(param));
         res.put("total", messageMapper.getSubscribeTypeCount(key));
         return res;
     }
@@ -104,9 +106,9 @@ public class ManageServiceImpl implements ManageService{
         map.put("userId", getUser().getUserId());
 
         if(operation.equals("sub"))//TODO
-            userMapper.subsribe(map);
+            userMapper.subscribe(map);
         else
-            userMapper.deSubsribe(map);
+            userMapper.unSubscribe(map);
     }
 
     public List<Message> getUnreadMessages() {
@@ -133,11 +135,25 @@ public class ManageServiceImpl implements ManageService{
         messageMapper.insertType(messageType.getName());
     }
 
-    public Map<String, Object> getMessage(String key) {
-        Map<String,Object> res = new HashMap<String,Object>();
-        res.put("total", messageMapper.getCount(key));
-        res.put("rows", messageMapper.getRows(key));
+    public Map<String, Object> getMessage(String name, String page, String rows) {
+        Map<String, Object> res = new HashMap<String, Object>();
+
+        Map<String, Object> param = getPagination(page, rows);
+        param.put("name", name);
+        res.put("rows", messageMapper.getRows(param));
+        res.put("total", messageMapper.getCount(name));
         return res;
+    }
+
+    private Map<String, Object> getPagination(String page, String rows) {
+        int pageInt = page == null ? 1 : Integer.parseInt(page);
+        int rowsInt = rows == null ? 10 : Integer.parseInt(rows);
+        int offset = (pageInt - 1) * rowsInt;
+
+        Map<String,Object> param = new HashMap<String,Object>();
+        param.put("offset", offset);
+        param.put("size", rowsInt);
+        return param;
     }
 
     private SecurityUser getUser() {
