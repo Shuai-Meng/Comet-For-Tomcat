@@ -336,6 +336,7 @@
                 param.id = row.id;
             }
             commonAjax(url, param);
+            $("#tabs").tabs('close', 'msg' + row.id);
         });
     }
 
