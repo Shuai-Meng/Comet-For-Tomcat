@@ -3,6 +3,24 @@
  */
 (function(obj) {
     $(function () {
+        $("#tabs").tabs({
+            fit:true,
+            toolPosition: 'right',
+            tools: [
+                {
+                    iconCls: 'icon-man',
+                    text: 'welcome: ' + $("#userName").text()
+                },
+                {
+                    iconCls: 'icon-no',
+                    text: 'logout',
+                    handler: function () {
+                        window.location = "/comet/logout";
+                    }
+                }
+            ]
+        });
+
         $(".mainmenu").click(function () {
             var id = $(this).attr("id").replace("button", "");
             var column = null;

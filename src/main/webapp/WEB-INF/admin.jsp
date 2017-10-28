@@ -28,14 +28,15 @@
             <button id="authbutton" class="mainmenu">权限管理</button><br>
             <button id="typebutton" class="mainmenu">消息类别管理</button><br>
             <button id="messagebutton" class="mainmenu">消息管理</button><br>
-            <button id="subscribebutton" class="mainmenu">订阅管理</button>
+            <button id="subscribebutton" class="mainmenu">订阅管理</button><br>
         </div>
     </div>
 
     <div region="center">
-        <div id="tabs" class="easyui-tabs" data-options="fit:true">
-        </div>
+        <div id="tabs"></div>
     </div>
+
+    <span id="userName" style="display: none">${userName}</span>
 
     <!-- 选项卡模板 -->
     <div id="dirTab">
