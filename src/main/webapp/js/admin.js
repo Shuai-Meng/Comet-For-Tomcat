@@ -227,7 +227,7 @@
             param['name'] = row.name;
         }
         commonAjax(obj.contextPath + "/modify" + firstLetterUpCase(id), param);
-        $table.datagrid('load', {});
+        $table.datagrid('reload', {});
     }
 
     function firstLetterUpCase(word) {
@@ -355,7 +355,7 @@
             }
             commonAjax(url, param);
             $("#tabs").tabs('close', 'msg' + row.id);
-            $table.datagrid('load', {});
+            $table.datagrid('reload', {});
         });
     }
 
