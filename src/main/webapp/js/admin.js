@@ -160,7 +160,7 @@
             }));
         } else {
             tools.push(generateToolElement('新增', 'icon-add', function () {
-                id == 'message' ? editMessage({'id':'New'}, 'add') : editType($table, 'add');
+                id == 'message' ? editMessage($table, {'id':'New'}, 'add') : editType($table, 'add');
             }));
             tools.push(generateToolElement('删除', 'icon-remove', function(){
                 deleteHandler(id, 'delete', $table);
@@ -171,7 +171,7 @@
                     $.messager.alert('alert', "please select a row first");
                     return;
                 }
-                id == 'message' ? editMessage(row, 'update') : editType($table, 'update', row);
+                id == 'message' ? editMessage($table, row, 'update') : editType($table, 'update', row);
             }));
         }
 
@@ -323,7 +323,7 @@
         }
     }
 
-    function editMessage(row, operation) {
+    function editMessage($table, row, operation) {
         var $div = $("#msgEdit").clone(true).show();
         addToPanel('msg' + row.id, $div[0]);
 
@@ -355,6 +355,7 @@
             }
             commonAjax(url, param);
             $("#tabs").tabs('close', 'msg' + row.id);
+            $table.datagrid('load', {});
         });
     }
 
