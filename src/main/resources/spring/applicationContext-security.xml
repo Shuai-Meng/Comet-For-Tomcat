@@ -18,7 +18,7 @@
                     always-use-default-target='true'
         />
 
-        <logout logout-url="/logout" logout-success-url="/login.jsp" invalidate-session="true"/>
+        <logout logout-url="/logout" logout-success-url="/login" invalidate-session="true"/>
 
         <session-management>
             <concurrency-control

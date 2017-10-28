@@ -52,11 +52,11 @@
         values(#{name}, #{password}, #{role})
     </insert>
 
-    <delete id="deSubsribe" parameterType="java.util.Map">
+    <delete id="unSubscribe" parameterType="java.util.Map">
         delete from subscribe_list where type_id = #{typeId} and user_id = #{userId}
     </delete>
 
-    <insert id="subsribe" parameterType="java.util.Map">
+    <insert id="subscribe" parameterType="java.util.Map">
         insert into subscribe_list(user_id, type_id) values (#{userId}, #{typeId})
     </insert>
 </mapper>
