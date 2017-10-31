@@ -1,11 +1,5 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: m
-  Date: 17-5-14
-  Time: 下午12:01
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
+<%@ page isELIgnored="false" %>
 <html>
 <head>
     <title>Eagle Login</title>
@@ -15,6 +9,7 @@
     <h2 align="center">Welecome to Eagle System</h2>
     <div style="MARGIN-RIGHT: auto; MARGIN-LEFT: auto; width: 300px; height: 200px;
                 margin-top: 200px; margin-bottom: auto; vertical-align:middle;">
+        <div>${sessionScope.SPRING_SECURITY_LAST_EXCEPTION.message}</div>
         <form action="/comet/login" method="post">
             <fieldset>
                 <legend>登陆</legend>
