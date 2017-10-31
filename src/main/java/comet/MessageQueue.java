@@ -8,6 +8,7 @@ import org.apache.catalina.comet.CometEvent;
 import utils.RedisUtil;
 import utils.SpringUtil;
 
+import javax.servlet.ServletResponse;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -71,7 +72,10 @@ public class MessageQueue implements Runnable {
     private void doSend(List<CometEvent> eventList, List<Message> list) {
         try {
             for (CometEvent event : eventList) {
-                PrintWriter writer = event.getHttpServletResponse().getWriter();
+                ServletResponse response = event.getHttpServletResponse();
+                response.setCharacterEncoding("UTF-8");
+
+                PrintWriter writer = response.getWriter();
                 writer.println(objectMapper.writeValueAsString(list));
                 writer.flush();
                 writer.close();
