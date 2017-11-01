@@ -5,6 +5,7 @@ import manage.service.ManageService;
 import manage.vo.Message;
 import manage.vo.MessageType;
 import manage.vo.MyUser;
+import manage.vo.SecurityUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +31,10 @@ public class ManageController {
     public ModelAndView getHomePage() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("admin");
-        modelAndView.addObject("userName",
-                SpringSecurityUtil.getCurrentUser().getUsername());
+
+        SecurityUser user = SpringSecurityUtil.getCurrentUser();
+        modelAndView.addObject("userName", user.getUsername());
+        modelAndView.addObject("userRole", user.getAuthorities());
 
         return modelAndView;
     }

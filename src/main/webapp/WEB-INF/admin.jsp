@@ -5,7 +5,7 @@
   Time: 上午12:16
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <%@ page isELIgnored="false" %>
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Cache-Control" content="no-cache">
@@ -19,24 +19,27 @@
     <script src="<%= request.getContextPath()%>/js/jquery.min.js"></script>
     <script src="<%= request.getContextPath()%>/js/jquery.easyui.min.js"></script>
     <script src="<%= request.getContextPath()%>/js/easyui-lang-zh_CN.js"></script>
+    <script>
+        var username = '${userName}';
+        var userRole = "${userRole}";
+        userRole = userRole.substring(1, userRole.length - 1);
+    </script>
     <script src="<%= request.getContextPath()%>/js/comet.js"></script>
     <script src="<%= request.getContextPath()%>/js/admin.js"></script>
 </head>
 <body class="easyui-layout" style="overflow:auto">
     <div region="west" style="left: 0px; width: 214px;" class="easyui-layout" split="true" title="菜单">
         <div class="easyui-accordion" fit="true" style="overflow:auto;width:193px">
-            <button id="authbutton" class="mainmenu">权限管理</button><br>
-            <button id="typebutton" class="mainmenu">消息类别管理</button><br>
-            <button id="messagebutton" class="mainmenu">消息管理</button><br>
-            <button id="subscribebutton" class="mainmenu">订阅管理</button><br>
+            <p></p><button id="authbutton" class="mainmenu">权限管理</button></p>
+            <p><button id="typebutton" class="mainmenu">消息类别管理</button></p>
+            <p><button id="messagebutton" class="mainmenu">消息管理</button></p>
+            <p><button id="subscribebutton" class="mainmenu">订阅管理</button></p>
         </div>
     </div>
 
     <div region="center">
         <div id="tabs"></div>
     </div>
-
-    <span id="userName" style="display: none">${userName}</span>
 
     <!-- 选项卡模板 -->
     <div id="dirTab">

@@ -9,7 +9,7 @@
             tools: [
                 {
                     iconCls: 'icon-man',
-                    text: 'welcome: ' + $("#userName").text()
+                    text: 'welcome: ' + username
                 },
                 {
                     iconCls: 'icon-no',
@@ -20,6 +20,11 @@
                 }
             ]
         });
+
+        if (userRole == "ROLE_PUB" || userRole == "ROLE_SUB") {
+            $("#authbutton").remove();
+            $("#typebutton").remove();
+        }
 
         $(".mainmenu").click(function () {
             var id = $(this).attr("id").replace("button", "");
@@ -151,16 +156,20 @@
             tools.push(generateToolElement('取消订阅', 'icon-remove', function(){
                 commonToolHandler(id, 'desub', $table);
             }));
-        } else if (id == 'auth') {
+        }
+
+        if (id == 'auth' && userRole == "ROLE_ADMIN") {
             tools.push(generateToolElement('升级', 'icon-add', function(){
                 commonToolHandler(id, 'upgrade', $table);
             }));
             tools.push(generateToolElement('降级', 'icon-remove', function(){
                 commonToolHandler(id, 'downgrade', $table);
             }));
-        } else {
+        }
+
+        if (id == "message" && userRole == "ROLE_PUB") {
             tools.push(generateToolElement('新增', 'icon-add', function () {
-                id == 'message' ? editMessage($table, {'id':'New'}, 'add') : editType($table, 'add');
+                editMessage($table, {'id':'New'}, 'add');
             }));
             tools.push(generateToolElement('删除', 'icon-remove', function(){
                 deleteHandler(id, 'delete', $table);
@@ -171,11 +180,25 @@
                     $.messager.alert('alert', "please select a row first");
                     return;
                 }
-                id == 'message' ? editMessage($table, row, 'update') : editType($table, 'update', row);
+                editMessage($table, row, 'update');
             }));
         }
 
-        if (id == "type") {
+        if (id == "type" && userRole == "ROLE_ADMIN") {
+            tools.push(generateToolElement('新增', 'icon-add', function () {
+                editType($table, 'add');
+            }));
+            tools.push(generateToolElement('删除', 'icon-remove', function(){
+                deleteHandler(id, 'delete', $table);
+            }));
+            tools.push(generateToolElement('修改', 'icon-edit', function () {
+                var row = $table.datagrid('getSelected');
+                if(row == null) {
+                    $.messager.alert('alert', "please select a row first");
+                    return;
+                }
+                editType($table, 'update', row);
+            }));
             tools.push(generateToolElement('保存', 'icon-save', function(){
                 var row = $table.datagrid('getSelected');
                 var index = $table.datagrid('getRowIndex', row);
