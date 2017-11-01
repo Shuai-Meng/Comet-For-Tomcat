@@ -132,9 +132,52 @@
       <artifactId>commons-dbcp</artifactId>
       <version>1.4</version>
     </dependency>
+
+      <dependency>
+          <groupId>tomcat</groupId>
+          <artifactId>comet</artifactId>
+          <version>1.0</version>
+          <scope>system</scope>
+          <systemPath>/Users/mengshuai/programs/tomcat7/lib/catalina.jar</systemPath>
+      </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <properties>
+        <deploy.env>dev</deploy.env>
+      </properties>
+      <activation>
+          <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>test</id>
+      <properties>
+        <deploy.env>test</deploy.env>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <finalName>comet</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources/properties/${deploy.env}</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.*</include>
+        </includes>
+        <targetPath>${build.outputDirectory}/properties</targetPath>
+      </resource>
+
+      <resource>
+          <directory>src/main/resources</directory>
+          <includes>
+            <include>**/*.*</include>
+          </includes>
+      </resource>
+    </resources>
   </build>
 </project>
