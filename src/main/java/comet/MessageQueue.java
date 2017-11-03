@@ -5,6 +5,8 @@ import manage.mapper.MessageMapper;
 import manage.mapper.UnreadListMapper;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.RedisUtil;
 import utils.SpringUtil;
 
@@ -13,6 +15,8 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class MessageQueue implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(MessageQueue.class);
+
     private static MessageQueue onlyInstance = new MessageQueue();
     private MessageMapper messageMapper;
     private UnreadListMapper unreadListMapper;
@@ -60,10 +64,14 @@ public class MessageQueue implements Runnable {
 
     private void sendMessage(Map<Integer, List<Message>> map) {
         for (int userId : map.keySet()) {
+            LOG.info("sending for user: " + userId);
             List<CometEvent> list = cometContainer.get(userId);
+
             if (list == null || list.isEmpty()) {
+                LOG.info(userId + " is offline");
                 storeUnreadMessage(userId, map.get(userId));
             } else {
+                LOG.info("user: {} has {} connections", userId, list.size());
                 doSend(list, map.get(userId));
             }
         }
@@ -96,6 +104,7 @@ public class MessageQueue implements Runnable {
                         Constants.LIST_VOLUME);
                 if(messageList.size() == 0) {
                     try {
+                        LOG.info("no message, waiting...");
                         wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
