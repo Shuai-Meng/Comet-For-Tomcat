@@ -2,30 +2,34 @@ package comet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import manage.mapper.MessageMapper;
-import manage.mapper.UnreadListMapper;
+import manage.mapper.TypeMapper;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.RedisUtil;
+import utils.SpringSecurityUtil;
 import utils.SpringUtil;
 
 import javax.servlet.ServletResponse;
 import java.io.PrintWriter;
 import java.util.*;
 
+/**
+ * @author mengshuai
+ */
 public class MessageQueue implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(MessageQueue.class);
 
     private static MessageQueue onlyInstance = new MessageQueue();
     private MessageMapper messageMapper;
-    private UnreadListMapper unreadListMapper;
+    private TypeMapper typeMapper;
     private ObjectMapper objectMapper = new ObjectMapper();
     private Map<Integer, List<CometEvent>> cometContainer = ConnectionManager.getContainer();
 
     private MessageQueue() {
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
-        unreadListMapper = (UnreadListMapper) SpringUtil.getBean("unreadListMapper");
+        typeMapper = (TypeMapper) SpringUtil.getBean("typeMapper");
     }
 
     public static MessageQueue getSingleInstance() {
@@ -55,10 +59,10 @@ public class MessageQueue implements Runnable {
 
     private void storeUnreadMessage(int userId, List<Message> list) {
         for (Message message : list) {
-            Map<String, Integer> map = new HashMap<String, Integer>();
+            Map<String, Integer> map = new HashMap<String, Integer>(2);
             map.put("userId", userId);
             map.put("messageId", message.getId());
-            unreadListMapper.insert(map);
+            messageMapper.insertUnread(map);
         }
     }
 
@@ -94,10 +98,10 @@ public class MessageQueue implements Runnable {
     }
 
     private List<Integer> getUserIdOfType(int type) {
-        return messageMapper.getUserIdOfType(type);
+        return typeMapper.getUserIdOfType(type);
     }
 
-    public void run() {
+    @Override public void run() {
         while(true) {
             synchronized (this) {
                 List<Object> messageList = RedisUtil.lrange(Constants.SENDING_LIST, 0,

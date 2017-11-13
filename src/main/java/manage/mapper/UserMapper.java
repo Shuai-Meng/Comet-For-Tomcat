@@ -18,10 +18,6 @@ public interface UserMapper {
 
     List<MyUser> selectUserByType(Map<String, Object> map);
 
-    void subscribe(Map<String, Integer> map);
-
-    void unSubscribe(Map<String, Integer> map);
-
     List<MyUser> selectUserByName(String name);
 
     MyUser selectUserByName1(String password);
