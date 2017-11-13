@@ -15,7 +15,7 @@ import org.apache.catalina.comet.CometProcessor;
 import org.springframework.security.core.context.SecurityContext;
 
 public class CometServlet extends HttpServlet  implements CometProcessor {
-	private Map<Integer, CometEvent> container;
+	private Map<Integer, List<CometEvent>> container;
 
 	public void init() {
 		container = ConnectionManager.getContainer();
@@ -25,17 +25,23 @@ public class CometServlet extends HttpServlet  implements CometProcessor {
 		int userId = getUserID(event);
 
 		if (event.getEventType() == CometEvent.EventType.BEGIN) {
-			event.setTimeout(60000);
-			container.put(userId, event);
+			event.setTimeout(60000);//TODO customize
+
+            List<CometEvent> list = container.get(userId);
+            if (list == null) {
+                list = new ArrayList<CometEvent>();
+                container.put(userId, list);
+            }
+			list.add(event);
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
 			if (event.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
 			    event.getHttpServletResponse().setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
 			}
 			event.close();
-			container.remove(userId);
+			container.get(userId).remove(event);
 		} else if (event.getEventType() == CometEvent.EventType.END) {
 			event.close();
-            container.remove(userId);
+            container.get(userId).remove(event);
 		} else if (event.getEventType() == CometEvent.EventType.READ) {
 			throw new UnsupportedOperationException("This servlet does not accept data");
 		}

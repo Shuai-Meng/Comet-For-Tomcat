@@ -8,13 +8,17 @@ $(function() {
 });
 
 function comet() {
-    console.log(new Date());
+    console.log("start linking-" + new Date());
     $.ajax({
         type: 'get',
         url: "/comet/test",
         dataType: 'json',
         success: function (data) {
-            showMessage(data.title, data.content);
+            console.log("message received-" + new Date());
+            var len = data.length;
+            while (len--) {
+                showMessage(data[len].title, data[len].content);
+            }
             comet();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -56,7 +60,7 @@ function generateWindow() {
         minimizable:false,
         maximizable:false,
         shadow:false,
-        href:"getUnreadMessages",
+        href:"/comet/manage/getUnreadMessages",//TODO relative url
         extractor: function (data) {
             if (data == "[]") {
                 return "no unread messages"
@@ -104,7 +108,7 @@ function generateList(data) {
 function showContent(obj) {
     $("#msgWin").window('body').html(obj.content);
     //after reading, we delete this message form unread list
-    $.post("removeUnreadMessage", {messageId: obj.id}, function () {
+    $.post("/comet/manage/removeUnreadMessage", {messageId: obj.id}, function () {
        console.log("message deleted")
     });
 }

@@ -2,86 +2,122 @@ package comet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import manage.mapper.MessageMapper;
-import manage.mapper.UnreadListMapper;
+import manage.mapper.TypeMapper;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.RedisUtil;
+import utils.SpringSecurityUtil;
 import utils.SpringUtil;
 
+import javax.servlet.ServletResponse;
 import java.io.PrintWriter;
 import java.util.*;
 
+/**
+ * @author mengshuai
+ */
 public class MessageQueue implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(MessageQueue.class);
+
     private static MessageQueue onlyInstance = new MessageQueue();
     private MessageMapper messageMapper;
-    private UnreadListMapper unreadListMapper;
-    private List<Message> messageList;
+    private TypeMapper typeMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private Map<Integer, List<CometEvent>> cometContainer = ConnectionManager.getContainer();
 
     private MessageQueue() {
-        messageList = new ArrayList<Message>();
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
-        unreadListMapper = (UnreadListMapper) SpringUtil.getBean("unreadListMapper");
+        typeMapper = (TypeMapper) SpringUtil.getBean("typeMapper");
     }
 
     public static MessageQueue getSingleInstance() {
         return onlyInstance;
     }
 
-    public synchronized void addMessage(Message message) {
-        //TODO 100
-        if(messageList.size() >= 100)
-            sendMessage();
+    private Map<Integer, List<Message>> dispatchMessage(List<Object> messageList) {
+        Map<Integer, List<Message>> map = new HashMap<Integer, List<Message>>();
 
-        messageList.add(message);
-        notifyAll();
-    }
+        for (Object object : messageList) {
+            Message message = (Message)object;
 
-    private void sendMessage() {
-        for(Message message : messageList) {
             for(int userId : getUserIdOfType(message.getType())) {
-                CometEvent event = ConnectionManager.getContainer().get(userId);
+                List<Message> tmp = map.get(userId);
 
-                if (event != null) {
-                    doSend(event, message);
-                } else {//means the user is offline
-                    Map<String, Integer> map = new HashMap<String, Integer>();
-                    map.put("userId", userId);
-                    map.put("messageId", message.getId());
-                    unreadListMapper.insert(map);
+                if (tmp == null) {
+                    tmp = new ArrayList<Message>();
+                    map.put(userId, tmp);
                 }
+
+                tmp.add(message);
             }
         }
-        messageList.clear();
+
+        return map;
     }
 
-    private void doSend(CometEvent event, Message message) {
+    private void storeUnreadMessage(int userId, List<Message> list) {
+        for (Message message : list) {
+            Map<String, Integer> map = new HashMap<String, Integer>(2);
+            map.put("userId", userId);
+            map.put("messageId", message.getId());
+            messageMapper.insertUnread(map);
+        }
+    }
+
+    private void sendMessage(Map<Integer, List<Message>> map) {
+        for (int userId : map.keySet()) {
+            LOG.info("sending for user: " + userId);
+            List<CometEvent> list = cometContainer.get(userId);
+
+            if (list == null || list.isEmpty()) {
+                LOG.info(userId + " is offline");
+                storeUnreadMessage(userId, map.get(userId));
+            } else {
+                LOG.info("user: {} has {} connections", userId, list.size());
+                doSend(list, map.get(userId));
+            }
+        }
+    }
+
+    private void doSend(List<CometEvent> eventList, List<Message> list) {
         try {
-            PrintWriter writer = event.getHttpServletResponse().getWriter();
-            ObjectMapper objectMapper = new ObjectMapper();
-            System.out.println(objectMapper.writeValueAsString(message));
-            writer.println(objectMapper.writeValueAsString(message));
-            writer.flush();
-            writer.close();
+            for (CometEvent event : eventList) {
+                ServletResponse response = event.getHttpServletResponse();
+                response.setCharacterEncoding("UTF-8");
+
+                PrintWriter writer = response.getWriter();
+                writer.println(objectMapper.writeValueAsString(list));
+                writer.flush();
+                writer.close();
+            }
         } catch (Exception e) {
-            System.out.println(Thread.currentThread().isAlive());
             e.printStackTrace();
         }
     }
 
     private List<Integer> getUserIdOfType(int type) {
-        return messageMapper.getUserIdOfType(type);
+        return typeMapper.getUserIdOfType(type);
     }
 
-    public void run() {
+    @Override public void run() {
         while(true) {
             synchronized (this) {
+                List<Object> messageList = RedisUtil.lrange(Constants.SENDING_LIST, 0,
+                        Constants.LIST_VOLUME);
                 if(messageList.size() == 0) {
                     try {
+                        LOG.info("no message, waiting...");
                         wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                } else
-                    sendMessage();
+                } else {
+                    Map<Integer, List<Message>> map = dispatchMessage(messageList);
+                    sendMessage(map);
+                    RedisUtil.ltrim(Constants.SENDING_LIST, Constants.LIST_VOLUME, -1);
+                }
             }
         }
     }

@@ -1,30 +1,32 @@
 package manage.service.impl;
 
 import manage.mapper.UserMapper;
-import manage.vo.MyUser;
-import manage.vo.SecurityUser;
-import org.springframework.beans.factory.annotation.Autowired;
+import manage.vo.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
- * Created by shuaimeng2 on 2017/5/30.
+ *
+ * @author shuaimeng2
+ * @date 2017/5/30
  */
 @Service
 public class MyUserServiceImpl implements UserDetailsService {
-    @Autowired
+    @Resource
     UserMapper userMapper;
 
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+    @Override public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         List<MyUser> list = userMapper.selectUserByName(name);
         userMapper.selectUserByName1("admin");
 
-        if (list == null || list.isEmpty())
+        if (list == null || list.isEmpty()) {
             throw new UsernameNotFoundException(name + " not found!");
+        }
 
         return generateUserDetails(list.get(0));
     }

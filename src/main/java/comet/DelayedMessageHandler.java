@@ -4,6 +4,7 @@ import manage.mapper.MessageMapper;
 import manage.vo.Message;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import utils.RedisUtil;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -23,7 +24,7 @@ public class DelayedMessageHandler {
     @Scheduled(cron = "0 * * * * ?")
     public void pushMessageToQueue() throws InterruptedException {
         for (Message message : getMessageFromDataBase(new Date())) {
-            MessageQueue.getSingleInstance().addMessage(message);
+            RedisUtil.lpush(Constants.SENDING_LIST, message);
         }
     }
 }
