@@ -3,72 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="manage.mapper.MessageMapper">
-    <select id="getTypeCount" parameterType="string" resultType="int">
-        select count(1) from message_type where 1 =1
-        <if test="name != null">
-            and name like concat(concat('%',#{name}),'%')
-        </if>
-    </select>
-
-    <select id="getTypeRows" parameterType="string" resultType="manage.vo.MessageType">
-        select * from message_type where 1 =1
-        <if test="name != null">
-            and name like concat(concat('%',#{name}),'%')
-        </if>
-        limit #{offset}, #{size}
-    </select>
-
-    <select id="getAllTypes" resultType="manage.vo.MessageType">
-        select * from message_type
-    </select>
-
-    <insert id="insertType" parameterType="string">
-        insert into message_type(name) values(#{name})
-    </insert>
-
-    <delete id="deleteType" parameterType="int">
-        delete from message_type where id = #{id}
-    </delete>
-
-    <update id="updateType" parameterType="manage.vo.MessageType">
-        update message_type set name = #{name} where id = #{id}
-    </update>
-
-    <select id="getSubscribeType" parameterType="java.util.Map" resultType="manage.vo.MessageType">
-        select *, if(
-          exists(
-            select user_id from subscribe_list
-              where message_type.id  = subscribe_list.type_id
-                and subscribe_list.user_id = #{id}
-          ), 0, 1) as operation
-        from message_type
-        where 1 =1
-        <if test="name != null">
-            and message_type.name like concat(concat('%',#{name}),'%')
-        </if>
-        limit #{offset}, #{size}
-    </select>
-
-    <select id="getSubscribeTypeCount" resultType="int">
-        select count(1) from message_type
-        where 1 = 1
-        <if test="name != null and name != '' ">
-            and message_type.name like concat(concat('%',#{name}),'%');
-        </if>
-    </select>
-
-    <select id="getUserIdOfType" resultType="int">
-        select user_id from subscribe_list where type_id = #{typeId}
-    </select>
-    <insert id="insert" parameterType="java.util.Map">
+    <insert id="insertUnread" parameterType="java.util.Map">
         insert into unread_list(user_id, message_id) values (#{userId}, #{messageId})
     </insert>
 
-    <delete id="delete" parameterType="java.util.Map">
+    <delete id="deleteUnread" parameterType="java.util.Map">
         delete from unread_list where user_id = #{userId} and message_id = #{messageId}
     </delete>
 
-    <select id="getUnreadList" parameterType="java.lang.Integer" resultType="manage.vo.Message">
+    <select id="getUnread" parameterType="java.lang.Integer" resultType="manage.vo.Message">
         select * from message where id in (
         select message_id from unread_list where user_id = #{userId}
         )
