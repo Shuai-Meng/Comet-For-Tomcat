@@ -1,6 +1,6 @@
 package manage.service.impl;
 
-import comet.Constants;
+import constants.Constants;
 import manage.mapper.MessageMapper;
 import manage.service.MessageService;
 import manage.vo.Message;

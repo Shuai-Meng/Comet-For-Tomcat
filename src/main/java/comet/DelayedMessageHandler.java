@@ -1,5 +1,6 @@
 package comet;
 
+import constants.Constants;
 import manage.mapper.MessageMapper;
 import manage.vo.Message;
 import org.springframework.scheduling.annotation.Scheduled;
