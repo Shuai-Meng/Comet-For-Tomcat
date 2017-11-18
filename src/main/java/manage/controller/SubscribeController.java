@@ -1,7 +1,6 @@
 package manage.controller;
 
 import manage.service.SubscribeService;
-import manage.vo.SecurityUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +22,7 @@ public class SubscribeController extends BaseController {
     @RequestMapping(value = "/modifySubscribe")
     @ResponseBody
     public void subscribe(HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if (ROLES.contains(user.getAuthorities())) {
+        if (ROLES.contains(getRole())) {
             String typeId = httpServletRequest.getParameter("id");
             String operation = httpServletRequest.getParameter("operation");
             subscribeService.subscribe(getUser().getUserId(), typeId, operation);
@@ -34,12 +32,11 @@ public class SubscribeController extends BaseController {
     @RequestMapping(value = "/getSubscribeType")
     @ResponseBody
     public Map<String,Object> getSubscribeType(HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if (ROLES.contains(user.getAuthorities())) {
+        if (ROLES.contains(getRole())) {
             String key = httpServletRequest.getParameter("name");
             String page = httpServletRequest.getParameter("page");
             String rows = httpServletRequest.getParameter("rows");
-            return subscribeService.getSubscribeType(page, rows, key, user.getUserId());
+            return subscribeService.getSubscribeType(page, rows, key, getUserId());
         } else {
             return null;
         }

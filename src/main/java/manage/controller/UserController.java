@@ -23,8 +23,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/getUsers")
     @ResponseBody
     public Map<String,Object> getUsers(HttpServletRequest httpServletRequest, MyUser myUser) {
-        SecurityUser user = getUser();
-        if (ROLE_ADMIN.equals(user.getAuthorities())) {
+        if (ROLE_ADMIN.equals(getRole())) {
             String page = httpServletRequest.getParameter("page");
             String rows = httpServletRequest.getParameter("rows");
             return authService.getUsers(page, rows, myUser);
@@ -36,8 +35,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/getUser")
     @ResponseBody
     public List<MyUser> getUser(HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if (ROLE_ADMIN.equals(user.getAuthorities())) {
+        if (ROLE_ADMIN.equals(getRole())) {
             String key = httpServletRequest.getParameter("q");
             String type = httpServletRequest.getParameter("type");
             return authService.getUsers(key, Integer.valueOf(type));
@@ -49,8 +47,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/modifyAuth")
     @ResponseBody
     public void modifyAuth(MyUser myUser) {
-        SecurityUser user = getUser();
-        if (ROLE_ADMIN.equals(user.getAuthorities())) {
+        if (ROLE_ADMIN.equals(getRole())) {
             authService.modifyAuth(myUser);
         }
     }

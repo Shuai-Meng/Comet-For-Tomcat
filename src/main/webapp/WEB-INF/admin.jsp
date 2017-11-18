@@ -22,7 +22,6 @@
     <script>
         var username = '${userName}';
         var userRole = "${userRole}";
-        userRole = userRole.substring(1, userRole.length - 1);
     </script>
     <script src="<%= request.getContextPath()%>/js/comet.js"></script>
     <script src="<%= request.getContextPath()%>/js/admin.js"></script>

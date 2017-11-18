@@ -167,7 +167,7 @@
             }));
         }
 
-        if (id == "message" && userRole != "ROLE_SUB") {
+        if (id == "message" && userRole == "ROLE_PUB") {
             tools.push(generateToolElement('新增', 'icon-add', function () {
                 editMessage($table, {'id':'New'}, 'add');
             }));

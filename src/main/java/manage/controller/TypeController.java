@@ -23,8 +23,7 @@ public class TypeController extends BaseController {
     @RequestMapping(value = "/getMessageTypes")
     @ResponseBody
     public List<MessageType> getMessageTypes() {
-        SecurityUser user = getUser();
-        if (ROLE_PUB.equals(user.getAuthorities())) {
+        if (ROLE_PUB.equals(getRole())) {
             return typeService.getMessageTypes();
         } else {
             return null;
@@ -34,8 +33,7 @@ public class TypeController extends BaseController {
     @RequestMapping(value = "/getMessageType")
     @ResponseBody
     public Map<String,Object> getMessageType(HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if (ROLE_ADMIN.equals(user.getAuthorities())) {
+        if (ROLE_ADMIN.equals(getRole())) {
             String key = httpServletRequest.getParameter("name");
             String page = httpServletRequest.getParameter("page");
             String rows = httpServletRequest.getParameter("rows");
@@ -48,8 +46,7 @@ public class TypeController extends BaseController {
     @RequestMapping(value = "/addType")
     @ResponseBody
     public void addType(MessageType messageType) {
-        SecurityUser user = getUser();
-        if (ROLE_ADMIN.equals(user.getAuthorities())) {
+        if (ROLE_ADMIN.equals(getRole())) {
             typeService.addMessageType(messageType);
         }
     }
@@ -57,8 +54,7 @@ public class TypeController extends BaseController {
     @RequestMapping(value = "/modifyType")
     @ResponseBody
     public void modifyType(HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if (ROLE_ADMIN.equals(user.getAuthorities())) {
+        if (ROLE_ADMIN.equals(getRole())) {
             String id = httpServletRequest.getParameter("id");
             String name = httpServletRequest.getParameter("name");
             String operation = httpServletRequest.getParameter("operation");

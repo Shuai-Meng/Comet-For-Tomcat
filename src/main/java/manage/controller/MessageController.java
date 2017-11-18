@@ -1,5 +1,6 @@
 package manage.controller;
 
+import constants.Constants;
 import manage.service.MessageService;
 import manage.vo.*;
 import org.springframework.stereotype.Controller;
@@ -9,7 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-import static constants.Constants.ROLES;
+import static constants.Constants.*;
 
 /**
  * @author mengshuai
@@ -23,8 +24,7 @@ public class MessageController extends BaseController {
     @RequestMapping(value = "/getMessage")
     @ResponseBody
     public Map<String,Object> getMessage(HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if (ROLES.contains(user.getAuthorities())) {
+        if (ROLES.contains(getRole())) {
             String key = httpServletRequest.getParameter("name");
             String page = httpServletRequest.getParameter("page");
             String rows = httpServletRequest.getParameter("rows");
@@ -37,9 +37,8 @@ public class MessageController extends BaseController {
     @RequestMapping(value = "/addMessage")
     @ResponseBody
     public void addMessage(Message message) {
-        SecurityUser user = getUser();
-        if ("ROLE_PUB".equals(user.getAuthorities())) {
-            message.setPublisher(user.getUsername());
+        if (ROLE_PUB.equals(getRole())) {
+            message.setPublisher(getUserName());
             messageService.addMessage(message);
         }
     }
@@ -47,10 +46,9 @@ public class MessageController extends BaseController {
     @RequestMapping(value = "/modifyMessage")
     @ResponseBody
     public void modifyMessage(Message message, HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if ("ROLE_PUB".equals(user.getAuthorities())) {
+        if (ROLE_PUB.equals(getRole())) {
             String operation = httpServletRequest.getParameter("operation");
-            message.setPublisher(user.getUsername());
+            message.setPublisher(getUserName());
             messageService.modifyMessage(message, operation);
         }
     }
@@ -58,9 +56,8 @@ public class MessageController extends BaseController {
     @RequestMapping(value = "/getUnreadMessages")
     @ResponseBody
     public List<Message> getUnreadMessage() {
-        SecurityUser user = getUser();
-        if (ROLES.contains(user.getAuthorities())) {
-            return messageService.getUnreadMessages(user.getUserId());
+        if (ROLES.contains(getRole())) {
+            return messageService.getUnreadMessages(getUserId());
         } else {
             return null;
         }
@@ -69,10 +66,9 @@ public class MessageController extends BaseController {
     @RequestMapping(value = "/removeUnreadMessage")
     @ResponseBody
     public void removeUnreadMessage(HttpServletRequest httpServletRequest) {
-        SecurityUser user = getUser();
-        if (ROLES.contains(user.getAuthorities())) {
+        if (ROLES.contains(getRole())) {
             int messageId = Integer.parseInt(httpServletRequest.getParameter("messageId"));
-            messageService.deleteUnreandMessage(messageId, user.getUserId());
+            messageService.deleteUnreandMessage(messageId, getUserId());
         }
     }
 }

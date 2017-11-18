@@ -1,10 +1,8 @@
 package manage.controller;
 
-import manage.vo.SecurityUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import utils.SpringSecurityUtil;
 
 import static constants.Constants.ROLES;
 
@@ -18,12 +16,11 @@ import static constants.Constants.ROLES;
 public class ManageController extends BaseController {
     @RequestMapping(value = "/home")
     public ModelAndView getHomePage() {
-        SecurityUser user = SpringSecurityUtil.getCurrentUser();
-        if (ROLES.contains(user.getAuthorities())) {
+        if (ROLES.contains(getRole())) {
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("admin");
-            modelAndView.addObject("userName", getUser().getUsername());
-            modelAndView.addObject("userRole", getUser().getAuthorities());
+            modelAndView.addObject("userName", getUserName());
+            modelAndView.addObject("userRole", getRole());
             return modelAndView;
         } else {
             return null;
