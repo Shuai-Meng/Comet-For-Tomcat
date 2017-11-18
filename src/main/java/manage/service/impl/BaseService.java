@@ -21,8 +21,4 @@ public class BaseService {
         param.put("size", rowsInt);
         return param;
     }
-
-    protected SecurityUser getUser() {
-        return SpringSecurityUtil.getCurrentUser();
-    }
 }

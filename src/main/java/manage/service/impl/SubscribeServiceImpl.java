@@ -16,10 +16,10 @@ public class SubscribeServiceImpl extends BaseService implements SubscribeServic
     @Resource
     private SubscribeMapper subscribeMapper;
 
-    @Override public Map<String, Object> getSubscribeType(String page, String rows, String key) {
+    @Override public Map<String, Object> getSubscribeType(String page, String rows, String key, int userId) {
         Map<String, Object> param = getPagination(page, rows);
         param.put("name", key);
-        param.put("id", getUser().getUserId());
+        param.put("id", userId);
 
         Map<String,Object> res = new HashMap<String,Object>();
         res.put("rows", subscribeMapper.getSubscribeType(param));
@@ -27,10 +27,10 @@ public class SubscribeServiceImpl extends BaseService implements SubscribeServic
         return res;
     }
 
-    @Override public void subscribe(String typeId, String operation) {
+    @Override public void subscribe(int userId, String typeId, String operation) {
         Map<String, Integer> map = new HashMap<String, Integer>(2);
         map.put("typeId", Integer.valueOf(typeId));
-        map.put("userId", getUser().getUserId());
+        map.put("userId", userId);
 
         if(operation.equals("sub")) {
             subscribeMapper.subscribe(map);

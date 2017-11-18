@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import utils.SpringSecurityUtil;
 
+import static constants.Constants.ROLES;
+
 /**
  *
  * @author shuaimeng
@@ -13,16 +15,18 @@ import utils.SpringSecurityUtil;
  */
 @Controller
 @RequestMapping("/manage")
-public class ManageController {
+public class ManageController extends BaseController {
     @RequestMapping(value = "/home")
     public ModelAndView getHomePage() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin");
-
         SecurityUser user = SpringSecurityUtil.getCurrentUser();
-        modelAndView.addObject("userName", user.getUsername());
-        modelAndView.addObject("userRole", user.getAuthorities());
-
-        return modelAndView;
+        if (ROLES.contains(user.getAuthorities())) {
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("admin");
+            modelAndView.addObject("userName", getUser().getUsername());
+            modelAndView.addObject("userRole", getUser().getAuthorities());
+            return modelAndView;
+        } else {
+            return null;
+        }
     }
 }

@@ -19,7 +19,6 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     private MessageMapper messageMapper;
 
     @Override public void addMessage(Message message) {
-        message.setPublisher(getUser().getUsername());
         messageMapper.insertMessage(message);
 
         if("1".equals(message.getImmediate())) {
@@ -28,13 +27,13 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         }
     }
 
-    @Override public List<Message> getUnreadMessages() {
-        return messageMapper.getUnread(getUser().getUserId());
+    @Override public List<Message> getUnreadMessages(int userId) {
+        return messageMapper.getUnread(userId);
     }
 
-    @Override public void deleteUnreandMessage(int messageId) {
+    @Override public void deleteUnreandMessage(int messageId, int userId) {
         Map<String, Integer> map = new HashMap<String, Integer>(2);
-        map.put("userId", getUser().getUserId());
+        map.put("userId", userId);
         map.put("messageId", messageId);
         messageMapper.deleteUnread(map);
     }
@@ -43,7 +42,6 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         if ("delete".equals(operation)) {
             messageMapper.deleteMessage(message);
         } else {
-            message.setPublisher(getUser().getUsername());
             messageMapper.updateMessage(message);
         }
     }

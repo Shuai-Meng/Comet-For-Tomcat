@@ -9,9 +9,9 @@ import java.util.Map;
 public interface MessageService {
     void addMessage(Message message);
 
-    List<Message> getUnreadMessages();
+    List<Message> getUnreadMessages(int userId);
 
-    void deleteUnreandMessage(int messageId);
+    void deleteUnreandMessage(int messageId, int userId);
 
     void modifyMessage(Message message, String operation);
 
