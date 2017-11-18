@@ -6,6 +6,7 @@ import manage.service.MessageService;
 import manage.vo.Message;
 import org.springframework.stereotype.Service;
 import utils.RedisUtil;
+import utils.TimeUtil;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -22,7 +23,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messageMapper.insertMessage(message);
 
         if("1".equals(message.getImmediate())) {
-            message.setSendTime(new Date());
+            message.setSendTime(TimeUtil.getNow());
             RedisUtil.lpush(Constants.SENDING_LIST, message);
         }
     }

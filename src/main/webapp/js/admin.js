@@ -407,6 +407,7 @@
         var $time = $div.find('input[name="sendTime"]');
         $time.datetimebox({
             value: '0',
+            showSeconds: false,
             required: true
         });
 

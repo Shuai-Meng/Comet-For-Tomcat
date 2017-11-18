@@ -68,7 +68,7 @@ public final class RedisUtil {
             if (operations.size() > 0) {//TODO performance
                 MessageQueue m = MessageQueue.getSingleInstance();
                 synchronized (m) {
-                    m.notify();
+                    m.notifyAll();
                 }
             }
         } catch (Exception e) {
