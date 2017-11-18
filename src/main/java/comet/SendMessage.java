@@ -14,17 +14,18 @@ import java.util.*;
  * @author mengshuai
  */
 public class SendMessage implements Runnable {
-    private static MessageMapper messageMapper =
-            (MessageMapper) SpringUtil.getBean("messageMapper");
     private static Map<Integer, List<CometEvent>> cometContainer =
             ConnectionManager.getContainer();
     private static ObjectMapper objectMapper = new ObjectMapper();
     private List<Integer> userList;
     private Map<Integer, List<Message>> map;
+    private MessageMapper messageMapper;
 
-    SendMessage(List<Integer> userList, Map<Integer, List<Message>> map) {
+    SendMessage(List<Integer> userList, Map<Integer, List<Message>> map,
+                MessageMapper messageMapper) {
         this.userList = userList;
         this.map = map;
+        this.messageMapper = messageMapper;
     }
 
     private void storeUnreadMessage(int userId, List<Message> list) {

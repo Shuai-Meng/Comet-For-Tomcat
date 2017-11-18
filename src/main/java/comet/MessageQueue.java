@@ -1,6 +1,7 @@
 package comet;
 
 import constants.Constants;
+import manage.mapper.MessageMapper;
 import manage.mapper.TypeMapper;
 import manage.vo.Message;
 import org.slf4j.*;
@@ -19,9 +20,11 @@ public class MessageQueue implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(MessageQueue.class);
     private static MessageQueue onlyInstance = new MessageQueue();
     private TypeMapper typeMapper;
+    private MessageMapper messageMapper;
 
     private MessageQueue() {
         typeMapper = (TypeMapper) SpringUtil.getBean("typeMapper");
+        messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
     }
 
     public static MessageQueue getSingleInstance() {
@@ -39,6 +42,8 @@ public class MessageQueue implements Runnable {
             for (List<Integer> list : getListGroup(userList)) {
                 futures.add(THREAD_POOL.submit(new DistributeMessage(list, message)));
             }
+
+            messageMapper.changeSendStatus(message.getId());
         }
 
         for (Future<Map<Integer, List<Message>>> future : futures) {
@@ -56,7 +61,7 @@ public class MessageQueue implements Runnable {
     private void sendMessage(Map<Integer, List<Message>> messageMap) {
         List<Integer> keyList = new ArrayList<Integer>(messageMap.keySet());
         for (List<Integer> list : getListGroup(keyList)) {
-            THREAD_POOL.execute(new SendMessage(list, messageMap));
+            THREAD_POOL.execute(new SendMessage(list, messageMap, messageMapper));
         }
     }
 

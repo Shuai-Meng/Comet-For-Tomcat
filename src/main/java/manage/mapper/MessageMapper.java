@@ -19,4 +19,5 @@ public interface MessageMapper {
     List<Message> getUnread(@Param("userId")int userId);
     void insertUnread(Map<String, Integer> map);
     void deleteUnread(Map<String, Integer> map);
+    void changeSendStatus(@Param("id") int messageId);
 }

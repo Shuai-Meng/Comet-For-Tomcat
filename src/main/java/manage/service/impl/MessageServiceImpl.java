@@ -39,10 +39,13 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     }
 
     @Override public void modifyMessage(Message message, String operation) {
-        if ("delete".equals(operation)) {
-            messageMapper.deleteMessage(message);
-        } else {
-            messageMapper.updateMessage(message);
+        //TODO maybe old status
+        if (!message.isSended()) {
+            if ("delete".equals(operation)) {
+                messageMapper.deleteMessage(message);
+            } else {
+                messageMapper.updateMessage(message);
+            }
         }
     }
 

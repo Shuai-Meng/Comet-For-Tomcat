@@ -316,6 +316,12 @@
                     tools.slice(3).hide();
                     break;
             }
+        } else if (id == 'message') {
+            if (row.sended) {
+                tools.slice(1).hide();
+            } else {
+                tools.slice(1).show();
+            }
         }
     }
 

@@ -64,4 +64,8 @@
           publisher = #{publisher}
         where id = #{id}
     </update>
+
+    <update id="changeSendStatus" parameterType="int">
+        update message set sended = 1 where id = #{id}
+    </update>
 </mapper>

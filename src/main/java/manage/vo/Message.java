@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Created by m on 17-5-10.
+ *
+ * @author m
+ * @date 17-5-10
  */
 public class Message implements Serializable{
     private static final long serialVersionUID = 1L;
@@ -19,7 +21,23 @@ public class Message implements Serializable{
     private String publisher;
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date   sendTime;
-    private String immediate;//是否即时推送，0否1是
+    /**
+     * 是否即时推送，0否1是
+     */
+    private String immediate;
+
+    /**
+     * whether sended, 0 no, 1 yes
+     */
+    private boolean sended;
+
+    public boolean isSended() {
+        return sended;
+    }
+
+    public void setSended(boolean sended) {
+        this.sended = sended;
+    }
 
     public String getImmediate() {
         return immediate;
