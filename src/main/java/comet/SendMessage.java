@@ -2,6 +2,7 @@ package comet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import manage.mapper.MessageMapper;
+import manage.service.RecordService;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
 import utils.SpringUtil;
@@ -14,18 +15,19 @@ import java.util.*;
  * @author mengshuai
  */
 public class SendMessage implements Runnable {
-    private static Map<Integer, List<CometEvent>> cometContainer =
-            ConnectionManager.getContainer();
+    private static Map<Integer, List<CometEvent>> cometContainer = ConnectionManager.getContainer();
     private static ObjectMapper objectMapper = new ObjectMapper();
     private List<Integer> userList;
     private Map<Integer, List<Message>> map;
     private MessageMapper messageMapper;
+    private RecordService recordService;
 
     SendMessage(List<Integer> userList, Map<Integer, List<Message>> map,
-                MessageMapper messageMapper) {
+                MessageMapper messageMapper, RecordService recordService) {
         this.userList = userList;
         this.map = map;
         this.messageMapper = messageMapper;
+        this.recordService = recordService;
     }
 
     private void storeUnreadMessage(int userId, List<Message> list) {
@@ -48,7 +50,17 @@ public class SendMessage implements Runnable {
             } else {
                 send(connectionList, messageList);
             }
+
+            recordService.insertRecord(userId, getMessageId(messageList));
         }
+    }
+
+    private List<Integer> getMessageId(List<Message> messageList) {
+        List<Integer> list = new ArrayList<Integer>();
+        for (Message message : messageList) {
+            list.add(message.getId());
+        }
+        return list;
     }
 
     private void send(List<CometEvent> connectionList, List<Message> messageList) {

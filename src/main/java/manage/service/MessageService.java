@@ -15,5 +15,5 @@ public interface MessageService {
 
     void modifyMessage(Message message, String operation);
 
-    Map<String,Object> getMessage(String key, String page, String rows);
+    Map<String,Object> getMessage(int userId, String key, String page, String rows);
 }

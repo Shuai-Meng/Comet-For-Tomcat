@@ -8,12 +8,14 @@ import java.sql.Timestamp;
 import java.util.*;
 
 /**
- * Created by m on 17-5-21.
+ *
+ * @author m
+ * @date 17-5-21
  */
 @Repository
 public interface MessageMapper {
-    List<Message> getRows(Map<String, Object> param);
-    int getCount(@Param("name")String name);
+    List<Message> getRows(Map<String, Object> map);
+    int getCount(Map<String, Object> map);
     void updateMessage(Message message);
     void insertMessage(Message message);
     void deleteMessage(Message message);

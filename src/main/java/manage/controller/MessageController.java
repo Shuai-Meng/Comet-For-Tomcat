@@ -28,7 +28,7 @@ public class MessageController extends BaseController {
             String key = httpServletRequest.getParameter("name");
             String page = httpServletRequest.getParameter("page");
             String rows = httpServletRequest.getParameter("rows");
-            return messageService.getMessage(key, page, rows);
+            return messageService.getMessage(getUserId(), key, page, rows);
         } else {
             return null;
         }

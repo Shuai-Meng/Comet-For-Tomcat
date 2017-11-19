@@ -3,6 +3,7 @@ package comet;
 import constants.Constants;
 import manage.mapper.MessageMapper;
 import manage.mapper.TypeMapper;
+import manage.service.RecordService;
 import manage.vo.Message;
 import org.slf4j.*;
 import utils.*;
@@ -19,12 +20,14 @@ import static comet.ThreadStarter.THREAD_POOL;
 public class MessageQueue implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(MessageQueue.class);
     private static MessageQueue onlyInstance = new MessageQueue();
-    private TypeMapper typeMapper;
+    private TypeMapper    typeMapper;
     private MessageMapper messageMapper;
+    private RecordService recordService;
 
     private MessageQueue() {
         typeMapper = (TypeMapper) SpringUtil.getBean("typeMapper");
         messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
+        recordService = (RecordService) SpringUtil.getBean("recordServiceImpl");
     }
 
     public static MessageQueue getSingleInstance() {
@@ -61,7 +64,7 @@ public class MessageQueue implements Runnable {
     private void sendMessage(Map<Integer, List<Message>> messageMap) {
         List<Integer> keyList = new ArrayList<Integer>(messageMap.keySet());
         for (List<Integer> list : getListGroup(keyList)) {
-            THREAD_POOL.execute(new SendMessage(list, messageMap, messageMapper));
+            THREAD_POOL.execute(new SendMessage(list, messageMap, messageMapper, recordService));
         }
     }
 

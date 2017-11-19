@@ -1,13 +1,15 @@
 package manage.vo;
 
 /**
- * Created by m on 17-5-13.
+ *
+ * @author m
+ * @date 17-5-13
  */
  public class MyUser {
     private int id;
     private String name;
     private String role;
-    private String list;
+    private String messageList;
     private String password;
 
     public int getId() {
@@ -42,11 +44,11 @@ package manage.vo;
         this.password = password;
     }
 
-    public String getList() {
-        return list;
+    public String getMessageList() {
+        return messageList;
     }
 
-    public void setList(String list) {
-        this.list = list;
+    public void setMessageList(String messageList) {
+        this.messageList = messageList;
     }
 }
