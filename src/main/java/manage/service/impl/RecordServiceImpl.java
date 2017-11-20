@@ -20,23 +20,23 @@ public class RecordServiceImpl implements RecordService {
     @Resource
     private RecordMapper recordMapper;
 
-    @Override public void insertRecord(int userId, List<Integer> messageList) {
+    @Override public void insertSubRecord(int userId, List<Integer> messageList) {
         MyUser user = new MyUser();
         user.setId(userId);
-        List<Integer> list = getRecord(userId);
+        List<Integer> list = getSubRecord(userId);
         if (list.isEmpty()) {
             list.addAll(messageList);
             user.setMessageList(list.toString());
-            recordMapper.insertRecord(user);
+            recordMapper.insertSubRecord(user);
         } else {
             list.addAll(messageList);
             user.setMessageList(list.toString());
-            recordMapper.updateRecord(user);
+            recordMapper.updateSubRecord(user);
         }
     }
 
-    @Override public List<Integer> getRecord(int userId) {
-        String messageList = recordMapper.getMessageList(userId);
+    @Override public List<Integer> getSubRecord(int userId) {
+        String messageList = recordMapper.getSubMessageList(userId);
         if (messageList == null || "".equals(messageList)) {
             return new ArrayList<Integer>(1);
         }
@@ -47,5 +47,19 @@ public class RecordServiceImpl implements RecordService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override public void insertPubRecord(int userId, int messageId) {
+        Map<String, Integer> param = new HashMap<String, Integer>(2);
+        param.put("userId", userId);
+        param.put("messageId", messageId);
+        recordMapper.insertPubRecord(param);
+    }
+
+    @Override public void deletePubRecord(int userId, int messageId) {
+        Map<String, Integer> param = new HashMap<String, Integer>(2);
+        param.put("userId", userId);
+        param.put("messageId", messageId);
+        recordMapper.deletePubRecord(param);
     }
 }

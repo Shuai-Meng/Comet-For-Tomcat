@@ -26,23 +26,39 @@
         <result property="sendTime" column="send_time"/>
     </resultMap>
 
-    <select id="getCount" parameterType="string" resultType="int">
-        select count(1) from message where id in
-          <foreach collection="range" item="item" open="(" separator="," close=")" index="index">
-              #{item}
-          </foreach>
-        <if test="name != null">
-            and title like concat(concat('%',#{name}),'%')
+    <select id="getCount" parameterType="map" resultType="int">
+        select count(1) from message where 1 = 1
+        <!-- recieve -->
+        <if test="type == 'sub'">
+            and id in
+            <foreach collection="range" item="item" open="(" separator="," close=")" index="index">
+                #{item}
+            </foreach>
+        </if>
+        <if test="type == 'pub'">
+            and id in
+            (select message_id from pub_record where user_id = #{userId})
+        </if>
+        <if test="key != null">
+            and title like concat(concat('%',#{key}),'%')
         </if>
     </select>
 
-    <select id="getRows" parameterType="java.util.Map" resultMap="messageMap">
-        select * from message where id in
-        <foreach collection="range" item="item" open="(" separator="," close=")" index="index">
-            #{item}
-        </foreach>
-        <if test="name != null">
-            and title like concat(concat('%',#{name}),'%')
+    <select id="getRows" parameterType="map" resultMap="messageMap">
+        select * from message where 1 = 1
+        <!-- recieve -->
+        <if test="type == 'sub'">
+            and id in
+            <foreach collection="range" item="item" open="(" separator="," close=")" index="index">
+                #{item}
+            </foreach>
+        </if>
+        <if test="type == 'pub'">
+            and id in
+            (select message_id from pub_record where user_id = #{userId})
+        </if>
+        <if test="key != null">
+            and title like concat(concat('%',#{key}),'%')
         </if>
         limit #{offset}, #{size}
     </select>

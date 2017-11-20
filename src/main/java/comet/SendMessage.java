@@ -5,7 +5,6 @@ import manage.mapper.MessageMapper;
 import manage.service.RecordService;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
-import utils.SpringUtil;
 
 import javax.servlet.ServletResponse;
 import java.io.PrintWriter;
@@ -51,7 +50,7 @@ public class SendMessage implements Runnable {
                 send(connectionList, messageList);
             }
 
-            recordService.insertRecord(userId, getMessageId(messageList));
+            recordService.insertSubRecord(userId, getMessageId(messageList));
         }
     }
 

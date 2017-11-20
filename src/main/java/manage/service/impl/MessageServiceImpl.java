@@ -2,7 +2,6 @@ package manage.service.impl;
 
 import constants.Constants;
 import manage.mapper.MessageMapper;
-import manage.mapper.RecordMapper;
 import manage.service.MessageService;
 import manage.service.RecordService;
 import manage.vo.Message;
@@ -23,13 +22,15 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Resource
     private RecordService recordService;
 
-    @Override public void addMessage(Message message) {
+    @Override public void addMessage(int userId, Message message) {
         messageMapper.insertMessage(message);
 
         if("1".equals(message.getImmediate())) {
             message.setSendTime(TimeUtil.getNow());
             RedisUtil.lpush(Constants.SENDING_LIST, message);
         }
+
+        recordService.insertPubRecord(userId, message.getId());
     }
 
     @Override public List<Message> getUnreadMessages(int userId) {
@@ -54,13 +55,15 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         }
     }
 
-    @Override public Map<String, Object> getMessage(int userId, String name, String page, String rows) {
+    @Override public Map<String, Object> getMessage(Map<String, Object> param) {
+        param.putAll(getPagination(param.get("page").toString(),
+                param.get("rows").toString()));
+        if ("sub".equals(param.get("type").toString())) {
+            int userId = Integer.valueOf(param.get("userId").toString());
+            param.put("range", recordService.getSubRecord(userId));
+        }
+
         Map<String, Object> res = new HashMap<String, Object>(2);
-
-        Map<String, Object> param = getPagination(page, rows);
-        param.put("name", name);
-        param.put("range", recordService.getRecord(userId));
-
         res.put("rows", messageMapper.getRows(param));
         res.put("total", messageMapper.getCount(param));
         return res;

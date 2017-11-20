@@ -46,10 +46,14 @@
         <div class="searchBar" align="center">
             <strong style="color:green;font-size:19px;">搜索：</strong>
             <input name="key"/>
-            <div id="roleMenu" style="display: none">
+            <div id="menu_auth" style="display: none">
                 <div data-options="name:'ROLE_PUB'">发布者</div>
                 <div data-options="name:'ROLE_SUB'">申请者</div>
-                <div data-options="name:'all'">全部</div>
+                <div data-options="name:'all',selected:true">全部</div>
+            </div>
+            <div id="menu_message" style="display: none">
+                <div data-options="name:'sub',selected:true">已订阅</div>
+                <div data-options="name:'pub'">已发布</div>
             </div>
         </div><br>
         <!-- 列表 -->

@@ -25,10 +25,13 @@ public class MessageController extends BaseController {
     @ResponseBody
     public Map<String,Object> getMessage(HttpServletRequest httpServletRequest) {
         if (ROLES.contains(getRole())) {
-            String key = httpServletRequest.getParameter("name");
-            String page = httpServletRequest.getParameter("page");
-            String rows = httpServletRequest.getParameter("rows");
-            return messageService.getMessage(getUserId(), key, page, rows);
+            Map<String, Object> param = new HashMap<String, Object>(5);
+            param.put("userId", getUserId());
+            param.put("type", httpServletRequest.getParameter("type"));
+            param.put("key", httpServletRequest.getParameter("name"));
+            param.put("page", httpServletRequest.getParameter("page"));
+            param.put("rows", httpServletRequest.getParameter("rows"));
+            return messageService.getMessage(param);
         } else {
             return null;
         }
@@ -39,7 +42,7 @@ public class MessageController extends BaseController {
     public void addMessage(Message message) {
         if (ROLE_PUB.equals(getRole())) {
             message.setPublisher(getUserName());
-            messageService.addMessage(message);
+            messageService.addMessage(getUserId(), message);
         }
     }
 

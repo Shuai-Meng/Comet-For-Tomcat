@@ -80,16 +80,29 @@
 
     function generateSearchBar($div, id) {
         var $menu = null;
-        if (id == "auth") $menu = '#roleMenu';
-
         var json = {};
+
+        if (id == "auth") {
+            $menu = '#menu_auth';
+        } else if (id == "message") {
+            json['type'] = 'sub';
+            if (userRole == "ROLE_PUB") {
+                $menu = '#menu_message';
+            }
+        }
+
         $div.find('input').searchbox({
             width:300,
             prompt:'请输入关键字',
             menu: $menu,
             searcher: function(key, value) {
+                //兼容MyUser实体类，必须叫name
                 json['name'] = key;
-                if(id == "auth") json['role'] = value;
+                if (id == "auth") {
+                    json['role'] = value;
+                } else if (id == "message") {
+                    json['type'] = value;
+                }
 
                 $div.find('table.datagrid-f').datagrid('load', json);
             },

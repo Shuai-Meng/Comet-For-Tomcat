@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface MessageService {
-    void addMessage(Message message);
+    void addMessage(int userId, Message message);
 
     List<Message> getUnreadMessages(int userId);
 
@@ -15,5 +15,5 @@ public interface MessageService {
 
     void modifyMessage(Message message, String operation);
 
-    Map<String,Object> getMessage(int userId, String key, String page, String rows);
+    Map<String,Object> getMessage(Map<String, Object> param);
 }

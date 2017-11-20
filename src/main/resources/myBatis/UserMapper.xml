@@ -3,16 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="manage.mapper.UserMapper">
-    <select id="selectUserByType" parameterType="java.util.Map" resultType="manage.vo.MyUser">
-        select user.id, user.name, user.role from user
-          inner join subscribe_list on user.id = subscribe_list.user_id
-        where 1 =1
-        <if test="name != null">
-            and user.name like concat(concat('%',#{name}),'%')
-        </if>
-        and subscribe_list.type_id = #{typeId}
-    </select>
-
     <select id="selectUserByRoleOrName" resultType="java.util.Map" parameterType="manage.vo.MyUser">
         select * from user where 1 = 1
         <if test = "role != null">

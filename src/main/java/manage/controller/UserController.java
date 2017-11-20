@@ -32,18 +32,6 @@ public class UserController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/getUser")
-    @ResponseBody
-    public List<MyUser> getUser(HttpServletRequest httpServletRequest) {
-        if (ROLE_ADMIN.equals(getRole())) {
-            String key = httpServletRequest.getParameter("q");
-            String type = httpServletRequest.getParameter("type");
-            return authService.getUsers(key, Integer.valueOf(type));
-        } else {
-            return null;
-        }
-    }
-
     @RequestMapping(value = "/modifyAuth")
     @ResponseBody
     public void modifyAuth(MyUser myUser) {

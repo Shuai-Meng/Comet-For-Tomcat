@@ -3,16 +3,24 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="manage.mapper.RecordMapper">
-    <insert id="insertRecord" parameterType="manage.vo.MyUser">
-      insert into record(user_id, message_list) VALUES (#{id}, #{messageList})
+    <insert id="insertSubRecord" parameterType="manage.vo.MyUser">
+      insert into sub_record(user_id, message_list) VALUES (#{id}, #{messageList})
     </insert>
 
-    <update id="updateRecord" parameterType="manage.vo.MyUser">
-        UPDATE record set message_list = #{messageList}
+    <update id="updateSubRecord" parameterType="manage.vo.MyUser">
+        UPDATE sub_record set message_list = #{messageList}
           where user_id = #{id}
     </update>
 
-    <select id="getMessageList" parameterType="int" resultType="string">
-        select message_list as messageList from record where user_id = #{userId}
+    <select id="getSubMessageList" parameterType="int" resultType="string">
+        select message_list as messageList from sub_record where user_id = #{userId}
     </select>
+
+    <insert id="insertPubRecord" parameterType="map">
+        insert into pub_record(user_id, message_id) VALUES (#{userId}, #{messageId})
+    </insert>
+
+    <delete id="deletePubRecord" parameterType="map">
+        delete from pub_record where user_id = #{userId} and message_id = #{messageId}
+    </delete>
 </mapper>

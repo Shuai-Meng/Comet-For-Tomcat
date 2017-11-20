@@ -35,13 +35,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         return res;
     }
 
-    @Override public List<MyUser> getUsers(String key, int typeId) {
-        Map<String, Object> map = new HashMap<String, Object>(2);
-        map.put("name", key);
-        map.put("typeId", typeId);
-        return userMapper.selectUserByType(map);
-    }
-
     @Override public void modifyAuth(MyUser myUser) {
         userMapper.update(myUser);
     }
