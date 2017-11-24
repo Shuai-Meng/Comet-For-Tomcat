@@ -381,11 +381,14 @@
         }
 
         $div.find('button[name="submit"]').click(function() {
+            var sendTime = $time.datetimebox('getText');
+            if (!validateTime(sendTime)) return;
+
             var param = {
                 'title': $title.val(),
                 'content':  $content.val(),
                 'immediate': $im.val(),
-                'sendTime': $time.datetimebox('getText'),
+                'sendTime': sendTime,
                 'type': $type.combobox('getValue')
             };
 
@@ -447,6 +450,15 @@
             $imme.combobox('setValue', row.immediate);
         }
         return $imme;
+    }
+
+    function validateTime(time) {
+        var gap = new Date(time) - new Date();
+        if (gap / (1000 * 60) < 2) {
+            $.messager.alert("warn", "不接受两分钟以内的定时消息，请改为立即推送！");
+            return false;
+        }
+        return true;
     }
 })({
     contextPath: "/comet/manage",//TODO
