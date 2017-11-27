@@ -232,7 +232,7 @@
     }
 
     function deleteHandler(id, operation, $table) {
-        $.messager.confirm('alert', 'are you sure to delete?', function (r) {
+        $.messager.confirm('alert', '确定删除？', function (r) {
             if (r) {
                 commonToolHandler(id, operation, $table);
             }
@@ -382,7 +382,7 @@
 
         $div.find('button[name="submit"]').click(function() {
             var sendTime = $time.datetimebox('getText');
-            if (!validateTime(sendTime)) return;
+            if ($im.val() == 0 && !validateTime(sendTime)) return;
 
             var param = {
                 'title': $title.val(),
@@ -400,7 +400,7 @@
             }
             commonAjax(url, param);
             $("#tabs").tabs('close', 'msg' + row.id);
-            $table.datagrid('reload', {});
+            $table.datagrid('reload', {type:'sub'});//TODO
         });
     }
 
@@ -454,8 +454,11 @@
 
     function validateTime(time) {
         var gap = new Date(time) - new Date();
-        if (gap / (1000 * 60) < 2) {
-            $.messager.alert("warn", "不接受两分钟以内的定时消息，请改为立即推送！");
+        if (gap <= 0) {
+            $.messager.alert("warn", "发送时间必须晚于当前时间！");
+            return false;
+        } else if (gap / 1000 < 60) {
+            $.messager.alert("warn", "不接受一分钟以内的定时消息！");
             return false;
         }
         return true;
@@ -483,7 +486,11 @@
         {field:'title',title:'标题',width:200},
         {field:'type',title:'类别',width:200},
         {field:'publisher',title:'发布者',width:200},
-        {field:'sendTime',title:'发送时间',width:200}
+        {field:'sendTime',title:'发送时间',width:200},
+        {field:'sended',title:'发送状态',width:150, formatter: function(value,row,index){
+            if (value == true) return "已发送";
+            else return "未发送";
+        }}
     ],
     subscribeColumn: [
         {field:'id',title:'编号',width:100,align:'left'},

@@ -23,13 +23,12 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     private RecordService recordService;
 
     @Override public void addMessage(int userId, Message message) {
-        messageMapper.insertMessage(message);
-
         if("1".equals(message.getImmediate())) {
-            message.setSendTime(TimeUtil.getNow());
+            message.setSendTime(new Date());
             RedisUtil.lpush(Constants.SENDING_LIST, message);
         }
 
+        messageMapper.insertMessage(message);
         recordService.insertPubRecord(userId, message.getId());
     }
 

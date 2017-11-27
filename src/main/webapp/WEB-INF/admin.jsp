@@ -29,7 +29,7 @@
 <body class="easyui-layout" style="overflow:auto">
     <div region="west" style="left: 0px; width: 214px;" class="easyui-layout" split="true" title="菜单">
         <div class="easyui-accordion" fit="true" style="overflow:auto;width:193px">
-            <p></p><button id="authbutton" class="mainmenu">权限管理</button></p>
+            <p></p><button id="authbutton" class="mainmenu">用户管理</button></p>
             <p><button id="typebutton" class="mainmenu">消息类别管理</button></p>
             <p><button id="messagebutton" class="mainmenu">消息管理</button></p>
             <p><button id="subscribebutton" class="mainmenu">订阅管理</button></p>
