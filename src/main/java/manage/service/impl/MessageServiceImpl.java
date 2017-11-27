@@ -6,6 +6,7 @@ import manage.service.MessageService;
 import manage.service.RecordService;
 import manage.vo.Message;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import utils.RedisUtil;
 import utils.TimeUtil;
 
@@ -57,7 +58,11 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Override public Map<String, Object> getMessage(Map<String, Object> param) {
         param.putAll(getPagination(param.get("page").toString(),
                 param.get("rows").toString()));
-        if ("sub".equals(param.get("type").toString())) {
+        String type = (String) param.get("type");
+        if (StringUtils.isEmpty(type)) {
+            type = "sub";
+        }
+        if ("sub".equals(type)) {
             int userId = Integer.valueOf(param.get("userId").toString());
             param.put("range", recordService.getSubRecord(userId));
         }

@@ -157,6 +157,14 @@
                     : $table.datagrid('refreshRow', index);
             }
         });
+
+        var tools = $("#" + id).find('div.datagrid div.datagrid-toolbar a');
+        tools.hide();
+        if (id == "type") {
+            tools.eq(0).show();
+        } else if (id == "message" && userRole == "ROLE_PUB") {
+            tools.eq(0).show();
+        }
     }
 
     function generateTableTools($table, id) {
@@ -180,21 +188,27 @@
             }));
         }
 
-        if (id == "message" && userRole == "ROLE_PUB") {
-            tools.push(generateToolElement('新增', 'icon-add', function () {
-                editMessage($table, {'id':'New'}, 'add');
-            }));
-            tools.push(generateToolElement('删除', 'icon-remove', function(){
-                deleteHandler(id, 'delete', $table);
-            }));
-            tools.push(generateToolElement('修改', 'icon-edit', function () {
-                var row = $table.datagrid('getSelected');
-                if(row == null) {
-                    $.messager.alert('alert', "please select a row first");
-                    return;
-                }
-                editMessage($table, row, 'update');
-            }));
+        if (id == "message") {
+            if (userRole == "ROLE_PUB") {
+                tools.push(generateToolElement('新增', 'icon-add', function () {
+                    editMessage($table, {'id':'New'}, 'add');
+                }));
+                tools.push(generateToolElement('修改', 'icon-edit', function () {
+                    var row = $table.datagrid('getSelected');
+                    if(row == null) {
+                        $.messager.alert('alert', "please select a row first");
+                        return;
+                    }
+                    editMessage($table, row, 'update');
+                }));
+            }
+
+            if (userRole == "ROLE_PUB" || userRole == "ROLE_ADMIN") {
+                tools.push(generateToolElement('删除', 'icon-remove', function(){
+                    deleteHandler(id, 'delete', $table);
+                }));
+            }
+
         }
 
         if (id == "type" && userRole == "ROLE_ADMIN") {
@@ -319,21 +333,22 @@
                     console.log("wrong param for subscribe type")
             }
         } else if (id == 'type') {
-            switch (row.editing) {
-                case true:
-                    tools.slice(0, 2).hide();
-                    tools.slice(3).show();
-                    break;
-                case false:
-                    tools.slice(0, 2).show();
-                    tools.slice(3).hide();
-                    break;
+            if (row.editing) {
+                tools.slice(0, 3).hide();
+                tools.slice(3).show();
+            } else {
+                tools.slice(0, 3).show();
+                tools.slice(3).hide();
             }
         } else if (id == 'message') {
-            if (row.sended) {
-                tools.slice(1).hide();
-            } else {
-                tools.slice(1).show();
+            if (userRole == "ROLE_PUB") {
+                if (row.sended) {
+                    tools.slice(1).hide();
+                } else {
+                    tools.slice(1).show();
+                }
+            } else if (userRole == "ROLE_ADMIN") {
+                tools.eq(0).show();
             }
         }
     }
@@ -400,7 +415,7 @@
             }
             commonAjax(url, param);
             $("#tabs").tabs('close', 'msg' + row.id);
-            $table.datagrid('reload', {type:'sub'});//TODO
+            $table.datagrid('reload');
         });
     }
 
