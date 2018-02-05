@@ -11,7 +11,7 @@
 	 http://www.springframework.org/schema/task
 	 http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-    <context:component-scan base-package="manage,comet"/>
+    <context:component-scan base-package="manage, comet"/>
     <bean class="utils.SpringUtil"/>
     <bean class="comet.ThreadStarter"/>
     <task:annotation-driven />
@@ -22,6 +22,7 @@
             <list>
                 <value>classpath:properties/db.properties</value>
                 <value>classpath:properties/redis.properties</value>
+                <value>classpath:properties/config.properties</value>
             </list>
         </property>
     </bean>
@@ -85,12 +86,27 @@
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="mapperLocations" value="classpath:myBatis/*Mapper.xml"></property>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                            reasonable=true
+                            supportMethodsArguments=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
     </bean>
 
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="manage.mapper" />
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="manage.mapper"/>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
     </bean>
 
     <bean id="transactionManager"

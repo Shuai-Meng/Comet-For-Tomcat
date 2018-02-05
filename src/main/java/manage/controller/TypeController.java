@@ -24,7 +24,7 @@ public class TypeController extends BaseController {
     @ResponseBody
     public List<MessageType> getMessageTypes() {
         if (ROLE_PUB.equals(getRole())) {
-            return typeService.getMessageTypes();
+            return typeService.getAllTypes();
         } else {
             return null;
         }
@@ -34,10 +34,12 @@ public class TypeController extends BaseController {
     @ResponseBody
     public Map<String,Object> getMessageType(HttpServletRequest httpServletRequest) {
         if (ROLE_ADMIN.equals(getRole())) {
-            String key = httpServletRequest.getParameter("name");
-            String page = httpServletRequest.getParameter("page");
-            String rows = httpServletRequest.getParameter("rows");
-            return typeService.getMessageType(key, page, rows);
+            Map<String, String> param = new HashMap<String, String>(4);
+            param.put("name", httpServletRequest.getParameter("name"));
+            param.put("userId", String.valueOf(getUserId()));
+            param.put("page", httpServletRequest.getParameter("page"));
+            param.put("rows" ,httpServletRequest.getParameter("rows"));
+            return typeService.getMessageType(param);
         } else {
             return null;
         }
@@ -59,6 +61,16 @@ public class TypeController extends BaseController {
             String name = httpServletRequest.getParameter("name");
             String operation = httpServletRequest.getParameter("operation");
             typeService.modifyType(id, name, operation);
+        }
+    }
+
+    @RequestMapping(value = "/modifySubscribe")
+    @ResponseBody
+    public void subscribe(HttpServletRequest httpServletRequest) {
+        if (ROLES.contains(getRole())) {
+            String typeId = httpServletRequest.getParameter("id");
+            String operation = httpServletRequest.getParameter("operation");
+            typeService.modifySubscribe(getUser().getUserId(), typeId, operation);
         }
     }
 }

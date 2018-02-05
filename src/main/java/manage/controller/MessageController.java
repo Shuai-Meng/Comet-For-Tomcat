@@ -1,6 +1,5 @@
 package manage.controller;
 
-import constants.Constants;
 import manage.service.MessageService;
 import manage.vo.*;
 import org.springframework.stereotype.Controller;
@@ -25,10 +24,10 @@ public class MessageController extends BaseController {
     @ResponseBody
     public Map<String,Object> getMessage(HttpServletRequest httpServletRequest) {
         if (ROLES.contains(getRole())) {
-            Map<String, Object> param = new HashMap<String, Object>(5);
-            param.put("userId", getUserId());
+            Map<String, String> param = new HashMap<String, String>(5);
+            param.put("userId", String.valueOf(getUserId()));
             param.put("type", httpServletRequest.getParameter("type"));
-            param.put("key", httpServletRequest.getParameter("name"));
+            param.put("title", httpServletRequest.getParameter("name"));
             param.put("page", httpServletRequest.getParameter("page"));
             param.put("rows", httpServletRequest.getParameter("rows"));
             return messageService.getMessage(param);
@@ -56,22 +55,12 @@ public class MessageController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/getUnreadMessages")
-    @ResponseBody
-    public List<Message> getUnreadMessage() {
-        if (ROLES.contains(getRole())) {
-            return messageService.getUnreadMessages(getUserId());
-        } else {
-            return null;
-        }
-    }
-
     @RequestMapping(value = "/removeUnreadMessage")
     @ResponseBody
     public void removeUnreadMessage(HttpServletRequest httpServletRequest) {
         if (ROLES.contains(getRole())) {
             int messageId = Integer.parseInt(httpServletRequest.getParameter("messageId"));
-            messageService.deleteUnreandMessage(messageId, getUserId());
+            messageService.markAsRead(messageId, getUserId());
         }
     }
 }

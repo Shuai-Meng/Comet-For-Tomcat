@@ -1,41 +1,49 @@
 package manage.service.impl;
 
-import manage.mapper.UserMapper;
+import com.github.pagehelper.*;
+import manage.mapper.MyUserMapper;
 import manage.service.UserService;
 import manage.vo.MyUser;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author shuaimeng
  */
 @Service
-public class UserServiceImpl extends BaseService implements UserService {
+public class UserServiceImpl implements UserService {
     @Resource
-    private UserMapper userMapper;
+    private MyUserMapper mapper;
 
     @Override public Map<String,Object> getUsers(String page, String rows, MyUser myUser) {
-        if("all".equals(myUser.getRole())) {
+        Example example = new Example(MyUser.class);
+        Example.Criteria criteria = example.createCriteria();
+        if ("ROLE_ALL".equals(myUser.getRole())) {
             myUser.setRole(null);
-        } else if("".equals(myUser.getName())) {
-            myUser.setName(null);
+        }
+        criteria.andEqualTo("role", myUser.getRole());
+        if (!StringUtils.isEmpty(myUser.getName())) {
+            criteria.andLike("name", "%" + myUser.getName() + "%");
         }
 
-        Map<String, Object> param = getPagination(page, rows);
-        param.put("name", myUser.getName());
-        param.put("role", myUser.getRole());
+        PageHelper.startPage(Integer.parseInt(page), Integer.parseInt(rows));
+        List<MyUser> list = mapper.selectByExample(example);
 
         Map<String, Object> res = new HashMap<String,Object>(2);
-        res.put("total", userMapper.getCount(myUser));
-        res.put("rows", userMapper.selectUserByRoleOrName(param));
+        res.put("rows", list);
+        res.put("total", ((Page) list).getTotal());
         return res;
     }
 
     @Override public void modifyAuth(MyUser myUser) {
-        userMapper.update(myUser);
+        Example example = new Example(MyUser.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("id", myUser.getId());
+
+        mapper.updateByExampleSelective(myUser, example);
     }
 }

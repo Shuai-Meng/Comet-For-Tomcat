@@ -49,7 +49,7 @@
             <div id="menu_auth" style="display: none">
                 <div data-options="name:'ROLE_PUB'">发布者</div>
                 <div data-options="name:'ROLE_SUB'">申请者</div>
-                <div data-options="name:'all',selected:true">全部</div>
+                <div data-options="name:'ROLE_ALL',selected:true">全部</div>
             </div>
             <div id="menu_message" style="display: none">
                 <div data-options="name:'sub',selected:true">已订阅</div>

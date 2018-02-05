@@ -1,13 +1,15 @@
 package manage.service.impl;
 
-import manage.mapper.UserMapper;
+import manage.mapper.MyUserMapper;
 import manage.vo.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.common.Mapper;
+import tk.mybatis.mapper.entity.Example;
 
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -17,12 +19,13 @@ import java.util.*;
  */
 @Service
 public class MyUserServiceImpl implements UserDetailsService {
-    @Resource
-    UserMapper userMapper;
+    @Autowired
+    private MyUserMapper mapper;
 
     @Override public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        List<MyUser> list = userMapper.selectUserByName(name);
-        userMapper.selectUserByName1("admin");
+        Example example = new Example(MyUser.class);
+        example.createCriteria().andEqualTo("name", name);
+        List<MyUser> list = mapper.selectByExample(example);
 
         if (list == null || list.isEmpty()) {
             throw new UsernameNotFoundException(name + " not found!");

@@ -1,7 +1,9 @@
 package manage.mapper;
 
 import manage.vo.MessageType;
+import manage.vo.Subscribe;
 import org.springframework.stereotype.Repository;
+import tk.mybatis.mapper.common.Mapper;
 
 import java.util.*;
 
@@ -9,12 +11,5 @@ import java.util.*;
  * @author mengshuai
  */
 @Repository
-public interface SubscribeMapper {
-    List<MessageType> getSubscribeType(Map<String, Object> param);
-
-    int getSubscribeTypeCount(String key);
-
-    void subscribe(Map<String, Integer> map);
-
-    void unSubscribe(Map<String, Integer> map);
+public interface SubscribeMapper extends Mapper<Subscribe> {
 }

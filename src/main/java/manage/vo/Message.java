@@ -3,6 +3,7 @@ package manage.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.*;
 
@@ -14,6 +15,7 @@ import java.util.*;
 public class Message implements Serializable{
     private static final long serialVersionUID = 1L;
 
+    @Id
     private int       id;
     private int       type;
     private String    title;
@@ -25,19 +27,6 @@ public class Message implements Serializable{
      * 是否即时推送，0否1是
      */
     private String    immediate;
-
-    /**
-     * whether sended, 0 no, 1 yes
-     */
-    private boolean sended;
-
-    public boolean isSended() {
-        return sended;
-    }
-
-    public void setSended(boolean sended) {
-        this.sended = sended;
-    }
 
     public String getImmediate() {
         return immediate;

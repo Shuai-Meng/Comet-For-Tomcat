@@ -1,9 +1,12 @@
 package manage.mapper;
 
-import manage.vo.MessageType;
+import manage.vo.Publish;
 import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.common.Mapper;
 
+/**
+ * @author mengshuai
+ */
 @Repository
-public interface TypeMapper extends Mapper<MessageType> {
+public interface PublishMapper extends Mapper<Publish> {
 }

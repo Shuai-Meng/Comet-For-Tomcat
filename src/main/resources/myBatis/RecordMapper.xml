@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="manage.mapper.RecordMapper">
+<mapper namespace="manage.mapper.PublishMapper">
     <insert id="insertSubRecord" parameterType="manage.vo.MyUser">
       insert into sub_record(user_id, message_list) VALUES (#{id}, #{messageList})
     </insert>
@@ -23,4 +23,8 @@
     <delete id="deletePubRecord" parameterType="map">
         delete from pub_record where user_id = #{userId} and message_id = #{messageId}
     </delete>
+
+    <select id="getPubRecord" parameterType="int" resultType="int">
+        select * from pub_record where user_id = #{userId}
+    </select>
 </mapper>

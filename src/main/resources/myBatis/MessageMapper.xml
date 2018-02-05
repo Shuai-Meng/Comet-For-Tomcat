@@ -60,7 +60,7 @@
         <if test="key != null">
             and title like concat(concat('%',#{key}),'%')
         </if>
-        limit #{offset}, #{size}
+--         limit #{offset}, #{size}
     </select>
 
     <select id="getMessagesOfThisMin" parameterType="java.util.Date" resultMap="messageMap">

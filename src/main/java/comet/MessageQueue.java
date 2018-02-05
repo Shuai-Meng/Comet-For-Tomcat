@@ -1,9 +1,9 @@
 package comet;
 
 import constants.Constants;
-import manage.mapper.MessageMapper;
 import manage.mapper.TypeMapper;
-import manage.service.RecordService;
+import manage.service.MessageService;
+import manage.service.TypeService;
 import manage.vo.Message;
 import org.slf4j.*;
 import utils.*;
@@ -20,14 +20,12 @@ import static comet.ThreadStarter.THREAD_POOL;
 public class MessageQueue implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(MessageQueue.class);
     private static MessageQueue onlyInstance = new MessageQueue();
-    private TypeMapper    typeMapper;
-    private MessageMapper messageMapper;
-    private RecordService recordService;
+    private TypeService typeService;
+    private MessageService messageService;
 
     private MessageQueue() {
-        typeMapper = (TypeMapper) SpringUtil.getBean("typeMapper");
-        messageMapper = (MessageMapper) SpringUtil.getBean("messageMapper");
-        recordService = (RecordService) SpringUtil.getBean("recordServiceImpl");
+        typeService = (TypeService) SpringUtil.getBean("typeServiceImpl");
+        messageService = (MessageService) SpringUtil.getBean("messageServiceImpl");
     }
 
     public static MessageQueue getSingleInstance() {
@@ -41,12 +39,12 @@ public class MessageQueue implements Runnable {
         for (Object object : messageList) {
             Message message = (Message)object;
             LOG.info("message: " + message.getTitle());
-            List<Integer> userList = typeMapper.getUserIdOfType(message.getType());
+            List<Integer> userList = typeService.getSubscribed(message.getType());
             for (List<Integer> list : getListGroup(userList)) {
                 futures.add(THREAD_POOL.submit(new DistributeMessage(list, message)));
             }
 
-            messageMapper.changeSendStatus(message.getId());
+            messageService.markAsPublished(message.getId());
         }
 
         for (Future<Map<Integer, List<Message>>> future : futures) {
@@ -64,7 +62,7 @@ public class MessageQueue implements Runnable {
     private void sendMessage(Map<Integer, List<Message>> messageMap) {
         List<Integer> keyList = new ArrayList<Integer>(messageMap.keySet());
         for (List<Integer> list : getListGroup(keyList)) {
-            THREAD_POOL.execute(new SendMessage(list, messageMap, messageMapper, recordService));
+            THREAD_POOL.execute(new SendMessage(list, messageMap, messageService));
         }
     }
 

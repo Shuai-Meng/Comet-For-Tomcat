@@ -1,9 +1,9 @@
 package manage.mapper;
 
-import manage.vo.MessageType;
+import manage.vo.Receive;
 import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.common.Mapper;
 
 @Repository
-public interface TypeMapper extends Mapper<MessageType> {
+public interface ReceiveMapper extends Mapper<Receive> {
 }

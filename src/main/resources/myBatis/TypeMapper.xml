@@ -10,12 +10,12 @@
         </if>
     </select>
 
-    <select id="getTypeRows" parameterType="string" resultType="manage.vo.MessageType">
+    <select id="getTypeRows" parameterType="map" resultType="manage.vo.MessageType">
         select * from message_type where 1 =1
         <if test="name != null">
             and name like concat(concat('%',#{name}),'%')
         </if>
-        limit #{offset}, #{size}
+--         limit #{offset}, #{limit}
     </select>
 
     <select id="getAllTypes" resultType="manage.vo.MessageType">

@@ -2,20 +2,21 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="manage.mapper.UserMapper">
-    <select id="selectUserByRoleOrName" resultType="java.util.Map" parameterType="manage.vo.MyUser">
-        select * from user where 1 = 1
-        <if test = "role != null">
+<mapper namespace="manage.mapper.MyUserMapper">
+    <select id="selectUserByRoleOrName" parameterType="tk.mybatis.mapper.entity.Example" resultType="manage.vo.MyUser">
+        select * from user
+        <where>
+        <if test = "role != null and role != ''">
          AND role = #{role}
         </if>
-        <if test = "name != null">
+        <if test = "name != null and name != ''">
             AND name like concat(concat('%',#{name}),'%')
         </if>
-        limit #{offset}, #{size}
+        </where>
     </select>
 
     <select id="selectUserByName" parameterType="string" resultType="manage.vo.MyUser">
-        select * from user where name = #{name}
+        select * from my_user where name = #{name}
     </select>
 
     <select id="selectUserByName1" parameterType="string" resultType="manage.vo.MyUser">
@@ -31,7 +32,7 @@
             AND name like concat(concat('%',#{name}),'%')
         </if>
     </select>
-
+    <!--
     <update id="update" parameterType="manage.vo.MyUser">
         update user set role = #{role}
         where id = #{id}
@@ -41,4 +42,5 @@
         insert into user(name, password, role)
         values(#{name}, #{password}, #{role})
     </insert>
+    -->
 </mapper>

@@ -1,15 +1,17 @@
 package manage.vo;
 
+import javax.persistence.Id;
+
 /**
  *
  * @author m
  * @date 17-5-13
  */
  public class MyUser {
+    @Id
     private int id;
     private String name;
     private String role;
-    private String messageList;
     private String password;
 
     public int getId() {
@@ -42,13 +44,5 @@ package manage.vo;
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getMessageList() {
-        return messageList;
-    }
-
-    public void setMessageList(String messageList) {
-        this.messageList = messageList;
     }
 }

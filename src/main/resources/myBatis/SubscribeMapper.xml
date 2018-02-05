@@ -9,7 +9,7 @@
         select user_id from subscribe_list
         where message_type.id  = subscribe_list.type_id
         and subscribe_list.user_id = #{id}
-        ), 0, 1) as operation
+        ), 0, 1) as status
         from message_type
         where 1 =1
         <if test="name != null">

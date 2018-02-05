@@ -1,8 +1,7 @@
 package comet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import manage.mapper.MessageMapper;
-import manage.service.RecordService;
+import manage.service.MessageService;
 import manage.vo.Message;
 import org.apache.catalina.comet.CometEvent;
 
@@ -16,27 +15,14 @@ import java.util.*;
 public class SendMessage implements Runnable {
     private static Map<Integer, List<CometEvent>> cometContainer = ConnectionManager.getContainer();
     private static ObjectMapper objectMapper = new ObjectMapper();
-    private List<Integer> userList;
+    private List<Integer>               userList;
     private Map<Integer, List<Message>> map;
-    private MessageMapper messageMapper;
-    private RecordService recordService;
+    private MessageService              messageService;
 
-    SendMessage(List<Integer> userList, Map<Integer, List<Message>> map,
-                MessageMapper messageMapper, RecordService recordService) {
+    SendMessage(List<Integer> userList, Map<Integer, List<Message>> map, MessageService messageService) {
         this.userList = userList;
         this.map = map;
-        this.messageMapper = messageMapper;
-        this.recordService = recordService;
-    }
-
-    private void storeUnreadMessage(int userId, List<Message> list) {
-        for (Message message : list) {
-            Map<String, Integer> map = new HashMap<String, Integer>(2);
-            map.put("userId", userId);
-            map.put("messageId", message.getId());
-            //TODO batch
-            messageMapper.insertUnread(map);
-        }
+        this.messageService = messageService;
     }
 
     @Override public void run() {
@@ -45,21 +31,13 @@ public class SendMessage implements Runnable {
 
             List<CometEvent> connectionList = cometContainer.get(userId);
             if (connectionList == null) {
-                storeUnreadMessage(userId, messageList);
+                messageService.insertReceive(userId, messageList, false);
             } else {
                 send(connectionList, messageList);
             }
 
-            recordService.insertSubRecord(userId, getMessageId(messageList));
+            messageService.insertReceive(userId, messageList, true);
         }
-    }
-
-    private List<Integer> getMessageId(List<Message> messageList) {
-        List<Integer> list = new ArrayList<Integer>();
-        for (Message message : messageList) {
-            list.add(message.getId());
-        }
-        return list;
     }
 
     private void send(List<CometEvent> connectionList, List<Message> messageList) {

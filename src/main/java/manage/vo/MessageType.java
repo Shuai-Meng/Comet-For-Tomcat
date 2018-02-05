@@ -1,10 +1,17 @@
 package manage.vo;
 
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
 /**
  * Created by m on 17-5-21.
  */
 public class MessageType {
-    private int id;
+    @Id
+    private int    id;
+    private String name;
+    @Transient
+    private byte status;
 
     public String getName() {
         return name;
@@ -14,8 +21,6 @@ public class MessageType {
         this.name = name;
     }
 
-    private String name;
-
     public int getId() {
         return id;
     }
@@ -24,13 +29,11 @@ public class MessageType {
         this.id = id;
     }
 
-    private String operation;
-
-    public String getOperation() {
-        return operation;
+    public byte getStatus() {
+        return status;
     }
 
-    public void setOperation(String operation) {
-        this.operation = operation;
+    public void setStatus(byte status) {
+        this.status = status;
     }
 }
