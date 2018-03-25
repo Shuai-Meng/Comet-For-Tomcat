@@ -1,6 +1,6 @@
 package comet;
 
-import manage.vo.Message;
+import manage.vo.MyMessage;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -8,19 +8,19 @@ import java.util.concurrent.Callable;
 /**
  * @author mengshuai
  */
-class DistributeMessage implements Callable<Map<Integer, List<Message>>> {
+class DistributeMessage implements Callable<Map<Integer, List<MyMessage>>> {
     private List<Integer> userList;
-    private Message message;
+    private MyMessage     message;
 
-    DistributeMessage(List<Integer> userList, Message message) {
+    DistributeMessage(List<Integer> userList, MyMessage message) {
         this.userList = userList;
         this.message = message;
     }
 
-    @Override public Map<Integer, List<Message>> call() {
-        Map<Integer, List<Message>> result = new HashMap<Integer, List<Message>>(userList.size());
+    @Override public Map<Integer, List<MyMessage>> call() {
+        Map<Integer, List<MyMessage>> result = new HashMap<Integer, List<MyMessage>>(userList.size());
         for(int userId : userList) {
-            List<Message> tmp = new ArrayList<Message>();
+            List<MyMessage> tmp = new ArrayList<MyMessage>();
             tmp.add(message);
             result.put(userId, tmp);
         }

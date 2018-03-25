@@ -10,6 +10,6 @@ import tk.mybatis.mapper.common.Mapper;
  * @date 17-5-21
  */
 @Repository
-public interface MessageMapper extends Mapper<Message> {
+public interface MessageMapper extends Mapper<MyMessage> {
 
 }

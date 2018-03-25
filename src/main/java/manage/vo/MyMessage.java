@@ -12,7 +12,7 @@ import java.util.*;
  * @author m
  * @date 17-5-10
  */
-public class Message implements Serializable{
+public class MyMessage implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @Id

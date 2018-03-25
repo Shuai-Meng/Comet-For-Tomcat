@@ -1,10 +1,9 @@
 package comet;
 
 import constants.Constants;
-import manage.mapper.TypeMapper;
 import manage.service.MessageService;
 import manage.service.TypeService;
-import manage.vo.Message;
+import manage.vo.MyMessage;
 import org.slf4j.*;
 import utils.*;
 import java.util.*;
@@ -32,12 +31,12 @@ public class MessageQueue implements Runnable {
         return onlyInstance;
     }
 
-    private Map<Integer, List<Message>> distributeMessage(List<Object> messageList) {
-        Map<Integer, List<Message>> messageMap = new HashMap<Integer, List<Message>>();
-        List<Future<Map<Integer, List<Message>>>> futures = new ArrayList<Future<Map<Integer, List<Message>>>>();
+    private Map<Integer, List<MyMessage>> distributeMessage(List<Object> messageList) {
+        Map<Integer, List<MyMessage>> messageMap = new HashMap<Integer, List<MyMessage>>();
+        List<Future<Map<Integer, List<MyMessage>>>> futures = new ArrayList<Future<Map<Integer, List<MyMessage>>>>();
 
         for (Object object : messageList) {
-            Message message = (Message)object;
+            MyMessage message = (MyMessage)object;
             LOG.info("message: " + message.getTitle());
             List<Integer> userList = typeService.getSubscribed(message.getType());
             for (List<Integer> list : getListGroup(userList)) {
@@ -47,7 +46,7 @@ public class MessageQueue implements Runnable {
             messageService.markAsPublished(message.getId());
         }
 
-        for (Future<Map<Integer, List<Message>>> future : futures) {
+        for (Future<Map<Integer, List<MyMessage>>> future : futures) {
             try {
                 messageMap.putAll(future.get());
             } catch (InterruptedException e) {
@@ -59,7 +58,7 @@ public class MessageQueue implements Runnable {
         return messageMap;
     }
 
-    private void sendMessage(Map<Integer, List<Message>> messageMap) {
+    private void sendMessage(Map<Integer, List<MyMessage>> messageMap) {
         List<Integer> keyList = new ArrayList<Integer>(messageMap.keySet());
         for (List<Integer> list : getListGroup(keyList)) {
             THREAD_POOL.execute(new SendMessage(list, messageMap, messageService));
@@ -94,7 +93,7 @@ public class MessageQueue implements Runnable {
                         e.printStackTrace();
                     }
                 } else {
-                    Map<Integer, List<Message>> map = distributeMessage(messageList);
+                    Map<Integer, List<MyMessage>> map = distributeMessage(messageList);
                     LOG.info("msgMapSize: " + map.size());
                     sendMessage(map);
                     RedisUtil.ltrim(Constants.SENDING_LIST, Constants.LIST_VOLUME, -1);

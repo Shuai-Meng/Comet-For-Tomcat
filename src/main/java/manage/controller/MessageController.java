@@ -38,7 +38,7 @@ public class MessageController extends BaseController {
 
     @RequestMapping(value = "/addMessage")
     @ResponseBody
-    public void addMessage(Message message) {
+    public void addMessage(MyMessage message) {
         if (ROLE_PUB.equals(getRole())) {
             message.setPublisher(getUserName());
             messageService.addMessage(getUserId(), message);
@@ -47,7 +47,7 @@ public class MessageController extends BaseController {
 
     @RequestMapping(value = "/modifyMessage")
     @ResponseBody
-    public void modifyMessage(Message message, HttpServletRequest httpServletRequest) {
+    public void modifyMessage(MyMessage message, HttpServletRequest httpServletRequest) {
         if (ROLE_PUB.equals(getRole())) {
             String operation = httpServletRequest.getParameter("operation");
             message.setPublisher(getUserName());

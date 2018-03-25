@@ -11,13 +11,13 @@
         delete from unread_list where user_id = #{userId} and message_id = #{messageId}
     </delete>
 
-    <select id="getUnread" parameterType="java.lang.Integer" resultType="manage.vo.Message">
+    <select id="getUnread" parameterType="java.lang.Integer" resultType="manage.vo.MyMessage">
         select * from message where id in (
         select message_id from unread_list where user_id = #{userId}
         )
     </select>
 
-    <resultMap id="messageMap" type="manage.vo.Message">
+    <resultMap id="messageMap" type="manage.vo.MyMessage">
         <id property="id" column="id"/>
         <result property="type" column="type"/>
         <result property="title" column="title"/>
@@ -67,7 +67,7 @@
         select * from message WHERE send_time = #{date} and IMMEDIATE = '0'
     </select>
 
-    <insert id="insertMessage" parameterType="manage.vo.Message" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertMessage" parameterType="manage.vo.MyMessage" useGeneratedKeys="true" keyProperty="id">
         insert into message(title, content, type, immediate, publisher, send_time) values
           (#{title}, #{content}, ${type}, #{immediate}, #{publisher}, #{sendTime})
     </insert>
@@ -76,7 +76,7 @@
         delete from message where id = #{id}
     </delete>
 
-    <update id="updateMessage" parameterType="manage.vo.Message">
+    <update id="updateMessage" parameterType="manage.vo.MyMessage">
         update message set
           title = #{title},
           type = #{type},
