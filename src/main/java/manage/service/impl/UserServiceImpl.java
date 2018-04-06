@@ -39,6 +39,12 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
+    @Override public List<MyUser> getDepartmentUsers(int departmentId) {
+        Example example = new Example(MyUser.class);
+        example.createCriteria().andEqualTo("departmentId", departmentId);
+        return mapper.selectByExample(example);
+    }
+
     @Override public void modifyAuth(MyUser myUser) {
         Example example = new Example(MyUser.class);
         Example.Criteria criteria = example.createCriteria();
@@ -46,4 +52,5 @@ public class UserServiceImpl implements UserService {
 
         mapper.updateByExampleSelective(myUser, example);
     }
+
 }

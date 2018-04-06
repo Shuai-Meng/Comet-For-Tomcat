@@ -15,35 +15,39 @@ import org.apache.catalina.comet.CometProcessor;
 import org.springframework.security.core.context.SecurityContext;
 
 public class CometServlet extends HttpServlet  implements CometProcessor {
-	private Map<Integer, List<CometEvent>> container;
+	private Map<Integer, CometEvent> container;
 
-	public void init() {
+	@Override public void init() {
 		container = ConnectionManager.getContainer();
 	}
 
+	@Override
 	public void event(CometEvent event) throws IOException, ServletException {
 		int userId = getUserID(event);
+		CometEvent old = container.get(userId);
+		if (old != null) {
+			old.close();
+		}
 
-		if (event.getEventType() == CometEvent.EventType.BEGIN) {
-			event.setTimeout(60000);//TODO customize
-
-            List<CometEvent> list = container.get(userId);
-            if (list == null) {
-                list = new ArrayList<CometEvent>();
-                container.put(userId, list);
-            }
-			list.add(event);
-		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
-			if (event.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
-			    event.getHttpServletResponse().setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
-			}
-			event.close();
-			container.get(userId).remove(event);
-		} else if (event.getEventType() == CometEvent.EventType.END) {
-			event.close();
-            container.get(userId).remove(event);
-		} else if (event.getEventType() == CometEvent.EventType.READ) {
-			throw new UnsupportedOperationException("This servlet does not accept data");
+		switch (event.getEventType()) {
+			case BEGIN:
+				//TODO customize
+				event.setTimeout(60000);
+				container.put(userId, event);
+				break;
+			case READ:
+				throw new UnsupportedOperationException("This servlet does not accept data");
+			case ERROR:
+				if (event.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
+					event.getHttpServletResponse().setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
+				}
+				event.close();
+				container.remove(userId);
+				break;
+			case END:
+				event.close();
+				container.remove(userId);
+				break;
 		}
 	}
 

@@ -31,7 +31,6 @@
 
     <mvc:resources mapping="/js/**" location="/js/" />
 
-
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
             p:prefix="/WEB-INF/" p:suffix=".jsp" />
 

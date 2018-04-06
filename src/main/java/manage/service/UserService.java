@@ -9,4 +9,6 @@ public interface UserService {
     void modifyAuth(MyUser myUser);
 
     Map<String,Object> getUsers(String page, String rows, MyUser myUser);
+
+    List<MyUser> getDepartmentUsers(int departmentId);
 }

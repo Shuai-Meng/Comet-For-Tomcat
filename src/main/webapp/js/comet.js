@@ -15,10 +15,10 @@ function comet() {
         dataType: 'json',
         success: function (data) {
             console.log("message received-" + new Date());
-            var len = data.length;
-            while (len--) {
-                showMessage(data[len].title, data[len].content);
-            }
+            // var len = data.length;
+            showMessage(data.title, data.content);
+            // while (len--) {
+            // }
             comet();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {

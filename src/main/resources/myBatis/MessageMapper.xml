@@ -68,8 +68,8 @@
     </select>
 
     <insert id="insertMessage" parameterType="manage.vo.MyMessage" useGeneratedKeys="true" keyProperty="id">
-        insert into message(title, content, type, immediate, publisher, send_time) values
-          (#{title}, #{content}, ${type}, #{immediate}, #{publisher}, #{sendTime})
+        insert into my_message(title, content, immediate, publisher, send_time) values
+          (#{title}, #{content}, #{immediate}, #{publisher}, #{sendTime})
     </insert>
 
     <delete id="deleteMessage" parameterType="int">

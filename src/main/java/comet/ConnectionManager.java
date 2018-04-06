@@ -9,12 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by m on 17-5-4.
  */
 public class ConnectionManager {
-    private static Map<Integer, List<CometEvent>> container
-            = new ConcurrentHashMap<Integer, List<CometEvent>>();
+    //TODO container may lose some newly established connection
+    private static Map<Integer, CometEvent> container
+            = new ConcurrentHashMap<Integer,CometEvent>();
 
     private ConnectionManager() {}
 
-    public static Map<Integer, List<CometEvent>> getContainer() {
+    public static Map<Integer, CometEvent> getContainer() {
         return container;
     }
 }

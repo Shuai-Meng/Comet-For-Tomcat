@@ -38,7 +38,7 @@ public class MessageQueue implements Runnable {
         for (Object object : messageList) {
             MyMessage message = (MyMessage)object;
             LOG.info("message: " + message.getTitle());
-            List<Integer> userList = typeService.getSubscribed(message.getType());
+            List<Integer> userList = typeService.getSubscribed(message.getId());
             for (List<Integer> list : getListGroup(userList)) {
                 futures.add(THREAD_POOL.submit(new DistributeMessage(list, message)));
             }

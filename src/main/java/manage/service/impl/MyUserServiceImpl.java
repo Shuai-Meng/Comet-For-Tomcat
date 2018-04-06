@@ -40,6 +40,7 @@ public class MyUserServiceImpl implements UserDetailsService {
 
         SecurityUser user = new SecurityUser(myUser.getName(), myUser.getPassword(), authorities);
         user.setUserId(myUser.getId());
+        user.setDepartmentId(myUser.getDepartmentId());
         return user;
     }
 }

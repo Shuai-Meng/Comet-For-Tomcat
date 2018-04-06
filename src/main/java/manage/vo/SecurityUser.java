@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class SecurityUser extends User{
     private int id;
+    private int departmentId;
 
     @SuppressWarnings("deprecation")
     public SecurityUser(String username, String password, List<GrantedAuthority> authorities)
@@ -23,5 +24,13 @@ public class SecurityUser extends User{
 
     public void setUserId(int userId) {
         this.id = userId;
+    }
+
+    public int getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
     }
 }

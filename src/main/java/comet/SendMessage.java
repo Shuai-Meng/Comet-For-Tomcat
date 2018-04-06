@@ -13,7 +13,7 @@ import java.util.*;
  * @author mengshuai
  */
 public class SendMessage implements Runnable {
-    private static Map<Integer, List<CometEvent>> cometContainer = ConnectionManager.getContainer();
+    private static Map<Integer, CometEvent> cometContainer = ConnectionManager.getContainer();
     private static ObjectMapper objectMapper = new ObjectMapper();
     private List<Integer>                 userList;
     private Map<Integer, List<MyMessage>> map;
@@ -29,14 +29,11 @@ public class SendMessage implements Runnable {
         for (int userId : userList) {
             List<MyMessage> messageList = map.get(userId);
 
-            List<CometEvent> connectionList = cometContainer.get(userId);
+            CometEvent connectionList = cometContainer.get(userId);
             if (connectionList == null) {
-                messageService.insertReceive(userId, messageList, false);
             } else {
-                send(connectionList, messageList);
             }
 
-            messageService.insertReceive(userId, messageList, true);
         }
     }
 

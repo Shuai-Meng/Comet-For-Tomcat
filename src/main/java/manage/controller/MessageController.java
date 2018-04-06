@@ -4,6 +4,7 @@ import manage.service.MessageService;
 import manage.vo.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import utils.SpringSecurityUtil;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,16 +17,16 @@ import static constants.Constants.*;
  */
 @Controller
 @RequestMapping("/manage")
-public class MessageController extends BaseController {
+public class MessageController {
     @Resource
     private MessageService messageService;
 
     @RequestMapping(value = "/getMessage")
     @ResponseBody
     public Map<String,Object> getMessage(HttpServletRequest httpServletRequest) {
-        if (ROLES.contains(getRole())) {
+        if (ROLES.contains(SpringSecurityUtil.getRole())) {
             Map<String, String> param = new HashMap<String, String>(5);
-            param.put("userId", String.valueOf(getUserId()));
+            param.put("userId", String.valueOf(SpringSecurityUtil.getUserId()));
             param.put("type", httpServletRequest.getParameter("type"));
             param.put("title", httpServletRequest.getParameter("name"));
             param.put("page", httpServletRequest.getParameter("page"));
@@ -39,18 +40,19 @@ public class MessageController extends BaseController {
     @RequestMapping(value = "/addMessage")
     @ResponseBody
     public void addMessage(MyMessage message) {
-        if (ROLE_PUB.equals(getRole())) {
-            message.setPublisher(getUserName());
-            messageService.addMessage(getUserId(), message);
+        if (ROLE_PUB.equals(SpringSecurityUtil.getRole())) {
+            message.setPublisher(SpringSecurityUtil.getUserName());
+            message.setRange(SpringSecurityUtil.getDepartmentId());
+            messageService.addMessage(SpringSecurityUtil.getUserId(), message);
         }
     }
 
     @RequestMapping(value = "/modifyMessage")
     @ResponseBody
     public void modifyMessage(MyMessage message, HttpServletRequest httpServletRequest) {
-        if (ROLE_PUB.equals(getRole())) {
+        if (ROLE_PUB.equals(SpringSecurityUtil.getRole())) {
             String operation = httpServletRequest.getParameter("operation");
-            message.setPublisher(getUserName());
+            message.setPublisher(SpringSecurityUtil.getUserName());
             messageService.modifyMessage(message, operation);
         }
     }
@@ -58,9 +60,9 @@ public class MessageController extends BaseController {
     @RequestMapping(value = "/removeUnreadMessage")
     @ResponseBody
     public void removeUnreadMessage(HttpServletRequest httpServletRequest) {
-        if (ROLES.contains(getRole())) {
+        if (ROLES.contains(SpringSecurityUtil.getRole())) {
             int messageId = Integer.parseInt(httpServletRequest.getParameter("messageId"));
-            messageService.markAsRead(messageId, getUserId());
+            messageService.markAsRead(messageId, SpringSecurityUtil.getUserId());
         }
     }
 }

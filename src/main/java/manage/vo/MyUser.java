@@ -1,6 +1,7 @@
 package manage.vo;
 
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  *
@@ -10,9 +11,12 @@ import javax.persistence.Id;
  public class MyUser {
     @Id
     private int id;
-    private String name;
     private String role;
+    private int departmentId;
+    private String name;
     private String password;
+    @Transient
+    private boolean online;
 
     public int getId() {
         return id;
@@ -44,5 +48,21 @@ import javax.persistence.Id;
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 }

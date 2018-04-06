@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.*;
 
@@ -17,7 +18,8 @@ public class MyMessage implements Serializable{
 
     @Id
     private int       id;
-    private int       type;
+    @Transient
+    private int       range;
     private String    title;
     private String    content;
     private String    publisher;
@@ -52,14 +54,6 @@ public class MyMessage implements Serializable{
         this.id = id;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -83,5 +77,13 @@ public class MyMessage implements Serializable{
 
     public void setSendTime(Date sendTime) {
         this.sendTime = sendTime;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public void setRange(int range) {
+        this.range = range;
     }
 }

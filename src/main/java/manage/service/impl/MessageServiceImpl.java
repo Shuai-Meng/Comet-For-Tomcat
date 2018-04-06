@@ -7,6 +7,7 @@ import manage.mapper.PublishMapper;
 import manage.mapper.ReceiveMapper;
 import manage.service.MessageService;
 import manage.vo.MyMessage;
+import manage.vo.MyUser;
 import manage.vo.Publish;
 import manage.vo.Receive;
 import org.apache.activemq.command.ActiveMQObjectMessage;
@@ -43,12 +44,8 @@ public class MessageServiceImpl implements MessageService {
 
     @Override public void addMessage(int userId, final MyMessage message) {
         Publish publish = new Publish();
-        publish.setUserId(userId);
-        publish.setMessageId(message.getId());
 
         if ("1".equals(message.getImmediate())) {//TODO
-            message.setSendTime(new Date());
-            publish.setStatus(true);
             jmsTemplate.send(destination, new MessageCreator() {
                 @Override
                 public Message createMessage(Session session)
@@ -58,11 +55,17 @@ public class MessageServiceImpl implements MessageService {
                     return msg;
                 }
             });
+            publish.setStatus(true);
+            message.setSendTime(new Date());
         } else {
             publish.setStatus(false);
         }
 
-        messageMapper.insertSelective(message);
+        messageMapper.insertMessage(message);
+
+        publish.setUserId(userId);
+        //TODO no id
+        publish.setMessageId(message.getId());
         publishMapper.insertSelective(publish);
     }
 
@@ -71,7 +74,7 @@ public class MessageServiceImpl implements MessageService {
         example.createCriteria().andEqualTo("userId", userId).andEqualTo("messageId", messageId);
 
         Receive receive = new Receive();
-        receive.setStatus(true);//TODO
+        receive.setStatus(true);
         receiveMapper.updateByExampleSelective(receive, example);
     }
 
@@ -112,19 +115,18 @@ public class MessageServiceImpl implements MessageService {
         return res;
     }
 
-    @Override public void insertReceive(int userId, List<MyMessage> messageList, boolean status) {
-        for (MyMessage message : messageList) {
-            Receive receive = new Receive();
-            receive.setUserId(userId);
-            receive.setMessageId(message.getId());
-            receive.setStatus(status);
-            receiveMapper.insertSelective(receive);
-        }
+    @Override public void insertReceive(int messageId, MyUser myUser) {
+        Receive receive = new Receive();
+        receive.setMessageId(messageId);
+        receive.setUserId(myUser.getId());
+        receive.setStatus(myUser.isOnline());
+
+        receiveMapper.insertSelective(receive);
     }
 
     @Override public void markAsPublished(int messageId) {
         Example example = new Example(Publish.class);
-        example.createCriteria().andEqualTo("messageid", messageId);
+        example.createCriteria().andEqualTo("messageId", messageId);
 
         Publish publish = new Publish();
         publish.setStatus(true);

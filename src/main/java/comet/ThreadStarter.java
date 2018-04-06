@@ -18,7 +18,7 @@ public class ThreadStarter implements ApplicationListener<ContextRefreshedEvent>
 
     @Override public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         if ("Root WebApplicationContext".equals(contextRefreshedEvent.getApplicationContext().getDisplayName())) {
-            THREAD_POOL.execute(MessageQueue.getSingleInstance());
+//            THREAD_POOL.execute(MessageQueue.getSingleInstance());
         }
     }
 }

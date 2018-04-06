@@ -12,4 +12,5 @@ import tk.mybatis.mapper.common.Mapper;
 @Repository
 public interface MessageMapper extends Mapper<MyMessage> {
 
+    int insertMessage(MyMessage myMessage);
 }

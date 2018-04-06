@@ -384,7 +384,7 @@
         var $div = $("#msgEdit").clone(true).show();
         addToPanel('msg' + row.id, $div[0]);
 
-        var $type = setTypeComponent($div, operation, row);
+        // var $type = setTypeComponent($div, operation, row);
         var $time = setTimeComponent($div, operation, row);
         var $im = setImComponent($div, operation, row);
         var $title = $div.find('input[name="title"]');
@@ -404,7 +404,7 @@
                 'content':  $content.val(),
                 'immediate': $im.val(),
                 'sendTime': sendTime,
-                'type': $type.combobox('getValue')
+                // 'type': $type.combobox('getValue')
             };
 
             var url = obj.contextPath + "/addMessage";
